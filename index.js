@@ -21,7 +21,7 @@ async function searchYouTubeAsync(args) {
 
 client.on("message", async (message) => {
 	if (message.author.bot || !message.content.startsWith(PREFIX)) return;
-	let [CMD_NAME, args] = message.content
+	let [CMD_NAME, args] = message.content.toLowerCase();
 		.trim()
 		.substring(PREFIX.length)
         .split(/\s+/);
