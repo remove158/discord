@@ -21,12 +21,12 @@ async function searchYouTubeAsync(args) {
 
 client.on("message", async (message) => {
 	if (message.author.bot || !message.content.startsWith(PREFIX)) return;
-	let [CMD_NAME, args] = message.content.toLowerCase();
+	let [CMD_NAME, ...args] = message.content.toLowerCase()
 		.trim()
 		.substring(PREFIX.length)
         .split(/\s+/);
 
-
+    args= args.join(" ");
 	switch (CMD_NAME) {
 		case "play":
 
