@@ -20,14 +20,16 @@ async function searchYouTubeAsync(args) {
 
 
 client.on("message", async (message) => {
+ 
 	if (message.author.bot || !message.content.startsWith(PREFIX)) return;
-	let [CMD_NAME, ...args] = message.content.toLowerCase()
+	let [CMD_NAME, ...args] = message.content
 		.trim()
 		.substring(PREFIX.length)
         .split(/\s+/);
 
     args= args.join(" ");
-	switch (CMD_NAME) {
+    console.log(args , args.startsWith('http'));
+	switch (CMD_NAME.toLowerCase()) {
 		case "play":
 
 		case "p":
@@ -67,7 +69,7 @@ client.on("message", async (message) => {
             if(!args.startsWith('http')) args = await searchYouTubeAsync(args)
 			server.queue.push(args);
 			message.delete();
-
+                console.log(`Playing ${args}`);
 			const info = await ytdl.getInfo(args);
 
 			embed = new MessageEmbed()
