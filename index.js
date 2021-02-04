@@ -120,12 +120,24 @@ client.on("message", async (message) => {
 			var server = servers[message.guild.id];
             if (server.dispatcher) server.dispatcher.end();
             message.delete();
-			embed = new MessageEmbed()
-				.setTitle("Playing")
+         
+            
+
+
+			const send = (result) =>{embed = new MessageEmbed()
+				.setTitle("เพลงต่อไป..")
 				.setColor(0x00a352)
-				.setDescription(server.queue[0])
-                .addField("tips", "-skip");
-			channel.send(embed);
+				.setDescription(result)
+                .addField("tips", "-skip")
+                channel.send(embed);
+            }
+			setTimeout(async () => {
+                const name = await ytdl.getBasicInfo(server.queue[0]);
+                const result = `[${name.videoDetails.title}](https://youtu.be/${name.videoDetails.videoId}) [ https://youtu.be/${name.videoDetails.videoId} ]` 
+                send(result);
+            }
+                
+            , 500);
 			break;
 
 		case "stop":
