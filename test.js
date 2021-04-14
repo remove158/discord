@@ -10,7 +10,7 @@ const servers = {};
 const playTheSong = require("./algorithm/playMusicAlgo");
 client.on("ready", () => {
 	console.log("The client is ready !");
-
+    const channel =  client.channels.cache.find(channel => channel.name === "osm-bot")
 	//to clear channel
 	command(client, ["cc", "clear"], (message) => {
 		if (message.member.hasPermission("ADMIN")) {
@@ -36,7 +36,8 @@ client.on("ready", () => {
 		if (!message.guild.voice || !message.guild.voice.connection) {
 			message.member.voice.channel.join().then(function (connection) {
 				playTheSong(myServer, connection);
-			});
+			})
+            channel.send("Playing...")
 		}
 	});
 
@@ -44,6 +45,15 @@ client.on("ready", () => {
     reaction(client , ["⏹️"] , (react,user)=> {
         const myServer = servers[react.message.guild.id];
         myServer.dispatcher.end();
+    })
+
+    reaction(client , ["⏯️"] , (react,user)=> {
+        const myServer = servers[react.message.guild.id];
+        const url = react.message
+        myServer.queue = ["https://www.youtube.com/watch?v=Jd4Hd-HFgls"]
+        react.message.member.voice.channel.join().then(function (connection) {
+            playTheSong(myServer, connection);
+        });
     })
 
 });
