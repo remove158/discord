@@ -15,7 +15,6 @@ client.on("ready", () => {
 	command(client, ["cc", "clear"], (message) => {
 		if (message.member.hasPermission("ADMIN")) {
 			message.channel.messages.fetch().then((results) => {
-				console.log("Clearing..");
 				message.channel.bulkDelete(results);
 			});
 		}
@@ -42,8 +41,9 @@ client.on("ready", () => {
 	});
 
     // handle user reaction
-    reaction(client , ["🔂"] , (react,user)=> {
-
+    reaction(client , ["⏹️"] , (react,user)=> {
+        const myServer = servers[react.message.guild.id];
+        myServer.dispatcher.end();
     })
 
 });
