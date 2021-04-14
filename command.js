@@ -7,6 +7,8 @@ module.exports = (client, aliases, callback) => {
 
 	client.on("message", (message) => {
 		const { content } = message;
+		//return if message comming form bot
+		if (message.author.bot) return;
 
 		aliases.forEach((alias) => {
 			const command = `${prefix}${alias}`;
