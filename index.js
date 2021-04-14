@@ -1,14 +1,16 @@
 require("dotenv").config();
 const { Client, MessageEmbed } = require("discord.js");
 const client = new Client();
+
 const PREFIX = "-";
 const ytdl = require("ytdl-core");
 var youtube=require('youtube-search-api');
 let embed = new MessageEmbed();
+
 let channel;
 client.on("ready", () => {
     console.log("Server listenning....");
-    channel = client.channels.cache.find(channel => channel.name === "temp")
+    channel = client.channels.cache.find(channel => channel.name === "osm-bot")
 });
 
 var servers = {};
@@ -18,9 +20,64 @@ async function searchYouTubeAsync(args) {
     return `https://youtu.be/${video.items[0].id}`
   }
 
+client.on("messageReactionAdd", async(reaction , user)=>{
+    var server = servers[reaction.message.guild.id];
+
+    if(!user.bot && reaction.emoji.name === '🔂' ){
+        const txt = reaction.message.embeds[0].description;
+        const start = txt.indexOf("https://")
+        const stop = txt.indexOf(" ",start)
+        let url = txt.slice(start,stop);
+        url=url.trim().trim(")")
+        console.log("Repeate URL : " , url);
+        const info = await ytdl.getInfo(url);
+
+        embed = new MessageEmbed()
+            .setTitle(`เล่นเพลงซ้ำ`)
+            .setColor(0xf2c04e)
+            .setDescription(
+                `[${info.videoDetails.title}](https://youtu.be/${info.videoDetails.videoId}) [ https://youtu.be/${info.videoDetails.videoId} ]` +
+                    "\n\n" +
+                    `queue by ${reaction.message.member}`
+            )
+            .addField("tips", "-p url\n-play url");
+
+        channel.send(embed);
+        reaction.message.member.voice.channel.join().then(function (connection) {
+            reaction.message.delete()
+            play(connection, reaction.message);
+        });
+        
+    }
+
+
+})
+client.on("messageReactionRemove", async(reaction , user)=>{
+    // console.log("React Remove !");
+
+})
+function play(connection, message) {
+    console.log("playing....");
+    var server = servers[message.guild.id];
+
+    server.dispatcher = connection.play(
+        ytdl(server.queue[0], { filter: "audio" })
+    );
+
+    server.dispatcher.on("finish", function () {
+        server.queue.shift();
+        if (server.queue[0]) {
+            play(connection, message);
+        } else {
+            connection.disconnect();
+        }
+    });
+}
 
 client.on("message", async (message) => {
- 
+    if( message.author.bot){
+        message.react("🔂")
+    }
 	if (message.author.bot || !message.content.startsWith(PREFIX)) return;
 	let [CMD_NAME, ...args] = message.content
 		.trim()
@@ -28,28 +85,12 @@ client.on("message", async (message) => {
         .split(/\s+/);
 
     args= args.join(" ");
-    console.log(args , args.startsWith('http'));
+
 	switch (CMD_NAME.toLowerCase()) {
 		case "play":
 
 		case "p":
-			function play(connection, message) {
-                
-				var server = servers[message.guild.id];
-
-				server.dispatcher = connection.play(
-					ytdl(server.queue[0], { filter: "audio" })
-				);
-
-				server.dispatcher.on("finish", function () {
-					server.queue.shift();
-					if (server.queue[0]) {
-						play(connection, message);
-					} else {
-						connection.disconnect();
-					}
-				});
-			}
+		
 
 			if (!args) {
 				message.reply("Please fill youtube url !");
