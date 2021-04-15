@@ -70,6 +70,7 @@ client.on("ready", () => {
 	});
 
 	reaction(client, ["⏯️"], async (react, user) => {
+        react.message.delete();
 		const myServer = servers[react.message.guild.id];
 		const txt = react.message.embeds[0].description;
 		const start = txt.indexOf("https://");
