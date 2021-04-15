@@ -18,6 +18,18 @@ client.on("ready", () => {
 				message.channel.bulkDelete(results);
 			});
 		}
+        message.channel.send(`
+        ================= CONSOLE =================
+
+        ** -p <url/name> ** - to play the song !
+        ** -help ** - to show command 
+        ** -cc ** - to clear the chat (only admin)
+        ** -skip ** - to skip playing song . 
+        ** react ⏯️** - to the song for play this song now !
+        ** react ⏹️** - to the song for skip playing song !
+
+================= END CONSOLE =================
+        `);
 	});
 
 	command(client, ["help"], (message) => {
@@ -28,7 +40,7 @@ client.on("ready", () => {
         ** -p <url/name> ** - to play the song !
         ** -help ** - to show command 
         ** -cc ** - to clear the chat (only admin)
-        ** -skip ** - to skip plaing song . 
+        ** -skip ** - to skip playing song . 
         ** react ⏯️** - to the song for play this song now !
         ** react ⏹️** - to the song for skip playing song !
 
