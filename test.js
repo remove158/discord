@@ -10,9 +10,7 @@ const servers = {};
 const playTheSong = require("./algorithm/playMusicAlgo");
 client.on("ready", () => {
 	console.log("The client is ready !");
-	const channel = client.channels.cache.find(
-		(channel) => channel.name === "osm-bot"
-	);
+
 	//to clear channel
 	command(client, ["cc", "clear"], (message) => {
 		if (message.member.hasPermission("ADMIN")) {
@@ -22,8 +20,8 @@ client.on("ready", () => {
 		}
 	});
 
-    command(client, ["help"], (message) => {
-        message.delete();
+	command(client, ["help"], (message) => {
+		message.delete();
 		message.channel.send(`
         ================= CONSOLE =================
 
@@ -34,12 +32,12 @@ client.on("ready", () => {
         ** react ⏹️** - to the song for skip playing song !
 
 ================= END CONSOLE =================
-        `)
-        client.user.setPresence({
-            activity : {
-                name : `"-help" for help`
-            }
-        })
+        `);
+		client.user.setPresence({
+			activity: {
+				name: `"-help" for help`,
+			},
+		});
 	});
 
 	//to play a song
@@ -54,13 +52,13 @@ client.on("ready", () => {
 			};
 		}
 		const myServer = servers[message.guild.id];
-        myServer.queue.push(url);
-        if(myServer.queue.length ===1) {
-            message.member.voice.channel.join().then(function (connection) {
+		myServer.queue.push(url);
+		if (myServer.queue.length === 1) {
+			message.member.voice.channel.join().then(function (connection) {
 				playTheSong(myServer, connection);
 			});
-        }
-		
+		}
+
 		if (!message.guild.voice || !message.guild.voice.connection) {
 			message.member.voice.channel.join().then(function (connection) {
 				playTheSong(myServer, connection);
@@ -77,11 +75,16 @@ client.on("ready", () => {
 					`queue by ${message.member}`
 			)
 			.addField("tips", "-p url\n-play url");
-		channel.send(emb).then((message) => {
+            message.channel.send(emb).then((message) => {
 			message.react("⏯️");
 			message.react("⏹️");
 		});
 	});
+
+	command(client, ["skip"], async (message) => {
+		const myServer = servers[message.guild.id];
+		myServer.dispatcher.end();
+    });
 
 	// handle user reaction
 	reaction(client, ["⏹️"], (react, user) => {
@@ -90,7 +93,7 @@ client.on("ready", () => {
 	});
 
 	reaction(client, ["⏯️"], async (react, user) => {
-        react.message.delete();
+		react.message.delete();
 		const myServer = servers[react.message.guild.id];
 		const txt = react.message.embeds[0].description;
 		const start = txt.indexOf("https://");
@@ -108,14 +111,17 @@ client.on("ready", () => {
 			)
 			.addField("tips", "-p url\n-play url");
 
-		channel.send(embed).then((message) => {
+		react.message.channel.send(embed).then((message) => {
 			message.react("⏯️");
 			message.react("⏹️");
 		});
 		myServer.queue = [url];
-		react.message.guild.members.cache.get(user.id).voice.channel.join().then(function (connection) {
-			playTheSong(myServer, connection);
-		});
+		react.message.guild.members.cache
+			.get(user.id)
+			.voice.channel.join()
+			.then(function (connection) {
+				playTheSong(myServer, connection);
+			});
 	});
 });
 
