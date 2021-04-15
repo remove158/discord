@@ -29,7 +29,7 @@ client.on("ready", () => {
 
         ** -p <url/name> ** - to play the song !
         ** -help ** - to show command 
-        ** --cc ** - to clear the chat (only admin)
+        ** -cc ** - to clear the chat (only admin)
         ** react ⏯️** - to the song for play this song now !
         ** react ⏹️** - to the song for skip playing song !
 
