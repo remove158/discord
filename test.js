@@ -22,6 +22,26 @@ client.on("ready", () => {
 		}
 	});
 
+    command(client, ["help"], (message) => {
+        message.delete();
+		message.channel.send(`
+        ================= CONSOLE =================
+
+        ** -p <url/name> ** - to play the song !
+        ** -help ** - to show command 
+        ** --cc ** - to clear the chat (only admin)
+        ** react ⏯️** - to the song for play this song now !
+        ** react ⏹️** - to the song for skip playing song !
+
+================= END CONSOLE =================
+        `)
+        client.user.setPresence({
+            activity : {
+                name : `"-help" for help`
+            }
+        })
+	});
+
 	//to play a song
 	command(client, ["p", "play"], async (message) => {
 		let args = message.content.trim().split(/\s+/).slice(1).join(" ");
