@@ -1,6 +1,6 @@
 const ytdl = require("ytdl-core");
 
-module.exports = (server, connection) => {
+const play = (server, connection) => {
 	server.dispatcher = connection.play(
 		ytdl(server.queue[0], { filter: "audio" })
 	);
@@ -18,3 +18,5 @@ module.exports = (server, connection) => {
 		}
 	});
 };
+
+module.exports = play;
