@@ -93,7 +93,7 @@ client.on("ready", () => {
 			message.react("⏹️");
 		});
 		myServer.queue = [url];
-		react.message.member.voice.channel.join().then(function (connection) {
+		react.message.guild.members.cache.get(user.id).voice.channel.join().then(function (connection) {
 			playTheSong(myServer, connection);
 		});
 	});
