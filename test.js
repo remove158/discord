@@ -99,12 +99,12 @@ client.on("ready", () => {
 		url = url.trim().trim(")");
 		const info = await ytdl.getInfo(url);
 		const embed = new Discord.MessageEmbed()
-			.setTitle(`เล่นเพลงซ้ำ`)
+			.setTitle(`เล่นเพลงอีกครั้ง`)
 			.setColor(0xf2c04e)
 			.setDescription(
 				`[${info.videoDetails.title}](https://youtu.be/${info.videoDetails.videoId}) [ https://youtu.be/${info.videoDetails.videoId} ]` +
 					"\n\n" +
-					`queue by ${react.message.member}`
+					`replay by ${user}`
 			)
 			.addField("tips", "-p url\n-play url");
 
