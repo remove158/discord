@@ -28,6 +28,7 @@ client.on("ready", () => {
         ** -p <url/name> ** - to play the song !
         ** -help ** - to show command 
         ** -cc ** - to clear the chat (only admin)
+        ** -skip ** - to skip plaing song . 
         ** react ⏯️** - to the song for play this song now !
         ** react ⏹️** - to the song for skip playing song !
 
@@ -82,6 +83,7 @@ client.on("ready", () => {
 	});
 
 	command(client, ["skip"], async (message) => {
+        message.delete()
 		const myServer = servers[message.guild.id];
 		myServer.dispatcher.end();
     });
