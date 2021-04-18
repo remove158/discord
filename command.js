@@ -9,10 +9,12 @@ module.exports = (client, aliases, callback) => {
 		const { content } = message;
 		//return if message comming form bot
 		if (message.author.bot) return;
-
+       
 		aliases.forEach((alias) => {
 			const command = `${prefix}${alias}`;
-			if (content.startsWith(command) || content === command) {
+            const cs = content.split(" ");
+            console.log(cs);
+			if (cs[0] === command || content === command) {
 				callback(message);
 			}
 		});
