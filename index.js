@@ -184,10 +184,11 @@ app.post("/actions", async (req, res, next) => {
 			message.react("⏯️");
 			message.react("⏹️");
 		});
-    }else if(cmd.startsWith('คิว')){
+    }else if(cmd.startsWith('คิว') || cmd.toUpperCase().startsWith('Q')){
         const myServer = servers["552497873116463107"];
+       
         if (myServer && myServer.queue) {
-            playlist = await Promise.all(
+           const  playlist = await Promise.all(
                 myServer.queue.map(async (url, index) => {
                     const name = await ytdl.getBasicInfo(url);
 
@@ -199,9 +200,10 @@ app.post("/actions", async (req, res, next) => {
 
                     return result;
                 })
+                
             );
-        }
-        embed = new MessageEmbed()
+
+            embed = new Discord.MessageEmbed()
             .setTitle("รายการ")
 
             .setColor(0x00a352)
@@ -209,6 +211,8 @@ app.post("/actions", async (req, res, next) => {
             .addField("tips", "-show");
 
         channel.send(embed);
+        }
+    
     }
 	return res.send(200);
 });
