@@ -8,6 +8,7 @@ exports.helpMessage = `
 ** -help ** - to show command 
 ** -cc ** - to clear the chat (only admin)
 ** -skip ** - to skip playing song . 
+** -show ** - to show playing queue.
 ** react ⏯️** - to the song for play this song now !
 ** react ⏹️** - to the song for skip playing song !
 

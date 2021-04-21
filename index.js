@@ -33,6 +33,11 @@ client.on("ready", () => {
 		message.channel.send(Messages.helpMessage);
 	});
 
+    handles.command(client, ["show"],async (message) => {
+        message.delete();
+		message.channel.send(await Messages.showQueue(servers[message.guild.id],"Message") );
+	});
+
 	handles.command(client, ["help"], (message) => {
 		message.delete();
 		message.channel.send(Messages.helpMessage);
