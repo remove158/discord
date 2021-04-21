@@ -160,6 +160,6 @@ app.post("/actions", async (req, res, next) => {
 	return res.sendStatus(200);
 });
 
-app.listen(process.env.PORT , () => {
+app.listen(process.env.PORT || 8080 , () => {
 	console.log(`Server listenning on port 8080  !`);
 });
