@@ -11,7 +11,7 @@ exports.helpMessage = `
 ** -show ** - to show playing queue.
 ** react ⏯️** - to the song for play this song now !
 ** react ⏹️** - to the song for skip playing song !
-** Voice Control ** - https://osmdiscordbot.web.app/   :) enjoy !
+** Voice Control ** - http://osmdiscordbot.herokuapp.com   :) enjoy !
 
 ================= END CONSOLE =================
 `
@@ -25,7 +25,7 @@ exports.addQueueMessage = async(url , header="Message") => {
 			.setDescription(
 				`[${info.videoDetails.title}](https://youtu.be/${info.videoDetails.videoId}) [ https://youtu.be/${info.videoDetails.videoId} ]` 
 			)
-			.addField("**TIPS**", "-q url\n** Voice Control ** \n - https://osmdiscordbot.web.app/   :) enjoy ! ");
+			.addField("**TIPS**", "-q url\n** Voice Control ** \n - http://osmdiscordbot.herokuapp.com   :) enjoy ! ");
     return emb;
 }
 
@@ -38,7 +38,7 @@ exports.playSongMessage = async(url ,header="Message") => {
 			.setDescription(
 				`[${info.videoDetails.title}](https://youtu.be/${info.videoDetails.videoId}) [ https://youtu.be/${info.videoDetails.videoId} ]`
 			)
-			.addField("**TIPS**", "-p url\n-play url\n** Voice Control ** \n - https://osmdiscordbot.web.app/   :) enjoy !");
+			.addField("**TIPS**", "-p url\n-play url\n** Voice Control ** \n - http://osmdiscordbot.herokuapp.com   :) enjoy !");
         return emb;
 }
 
@@ -60,7 +60,7 @@ exports.showQueue = async(queue,header="Voice")=>{
 
             .setColor(0x00a352)
             .setDescription(playlist|| "None")
-            .addField("**TIPS**", "-show \n ** Voice Control **  \n- https://osmdiscordbot.web.app/   :) enjoy !");
+            .addField("**TIPS**", "-show \n ** Voice Control **  \n- http://osmdiscordbot.herokuapp.com   :) enjoy !");
 
         return embed;
 }
