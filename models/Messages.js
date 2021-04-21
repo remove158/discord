@@ -19,11 +19,11 @@ exports.helpMessage = `
 exports.addQueueMessage = async(url , header="Message") => {
     const emb = new Discord.MessageEmbed();
 		const info = await ytdl.getInfo(url);
-        const title = `[${header}] เพิ่มเพลงเข้าคิว`
+        const title = `**[${header}]** เพิ่มเพลงเข้าคิว`
 		emb.setTitle(title)
 			.setColor(0xf2c04e)
 			.setDescription(
-				`[${info.videoDetails.title}](https://youtu.be/${info.videoDetails.videoId}) [ https://youtu.be/${info.videoDetails.videoId} ]` 
+				` ${info.videoDetails.title} [ https://youtu.be/${info.videoDetails.videoId} ]` 
 			)
 			.addField("**TIPS**", "-p <url/name>\n** Voice Control ** \n - https://osmdiscordbot.herokuapp.com   :) enjoy ! ");
     return emb;
@@ -41,14 +41,11 @@ exports.playSongMessage = async(url ,header="Message",queue=[]) => {
             return result;
         })
     );
-    const title = `[${header}] กำลังเล่นเพลง`
+    const title = `**[${header}]** กำลังเล่นเพลง ${info.videoDetails.title}`
 		const emb = new Discord.MessageEmbed()
 			.setTitle(title)
 			.setColor(0xf2c04e)
-			.setDescription(
-				`[${info.videoDetails.title}](https://youtu.be/${info.videoDetails.videoId}) [ https://youtu.be/${info.videoDetails.videoId} ]`
-			)
-			.addField("**Queues**", `${playlist}\n** Voice Control ** \n - https://osmdiscordbot.herokuapp.com   :) enjoy !`);
+			.setDescription("**Queues**" + `${playlist}\n** Voice Control ** \n - https://osmdiscordbot.herokuapp.com   :) enjoy !`);
         return emb;
 }
 
@@ -60,11 +57,11 @@ exports.showQueue = async(queue,header="Voice")=>{
                 const result =
                     (index + 1).toString() +
                     ". " +
-                    `[${item.title}](${item.url}) [${item.url} ]`
+                    `${item.title} [${item.url} ]`
                 return result;
             })
         );
-        const title = `[${header}] รายการ`
+        const title = `**[${header}]** รายการ`
         const embed = new Discord.MessageEmbed()
             .setTitle(title)
 
