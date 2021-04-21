@@ -19,6 +19,10 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 var channel;
+
+const RESET = ()=>{
+    servers = {}
+}
 client.on("ready", () => {
 	console.log("The client is ready !");
 	channel = client.channels.cache.find(
@@ -38,6 +42,10 @@ client.on("ready", () => {
     handles.command(client, ["show"],async (message) => {
         message.delete();
 		message.channel.send(await Messages.showQueue(servers[message.guild.id],"Message") );
+	});
+    handles.command(client, ["reset"],async (message) => {
+        message.delete();
+		RESET();
 	});
 
 	handles.command(client, ["help"], (message) => {
@@ -231,9 +239,14 @@ app.post("/actions", async (req, res, next) => {
 
 		channel.send(await Messages.showQueue(myServer,"Voice"));
 	});
+	handles.voice(cmd, [ "รีเซ็ต", "reset","Reset"], async () => {
+
+		RESET();
+	});
 
 	return res.sendStatus(200);
 });
+
 const httpsOptions ={
     cert : fs.readFileSync(path.join(__dirname,'ssl',"server.crt")),
     key : fs.readFileSync(path.join(__dirname,'ssl',"server.key"))
