@@ -2,7 +2,9 @@ require("dotenv").config();
 const Discord = require("discord.js");
 const client = new Discord.Client();
 const ytdl = require("ytdl-core");
-
+const https = require('https')
+const fs = require('fs')
+const path = require('path')
 const searchYoutube = require("./algorithm/seachYoutubeAlgo");
 const Messages = require("./models/Messages");
 const handles = require("./handles/");
@@ -199,6 +201,10 @@ app.post("/actions", async (req, res, next) => {
 
 	return res.sendStatus(200);
 });
-app.listen(80, () => {
-	console.log("Voice listenning on port 80!");
-});
+const httpsOptions ={
+    cert : fs.readFileSync(path.join(__dirname,'ssl',"server.crt")),
+    key : fs.readFileSync(path.join(__dirname,'ssl',"server.key"))
+}
+https.createServer( httpsOptions , app).listen( 443 , ()=>{
+    console.log("Server listenning on port 443 !");
+})
