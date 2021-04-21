@@ -143,6 +143,6 @@ app.post("/actions", (req,res,next)=>{
     }
    return res.send(200)
 })
-app.listen(3000 , ()=>{
+app.listen(80, ()=>{
     console.log("Voice listenning on port 3000!");
 })
