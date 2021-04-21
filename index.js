@@ -139,7 +139,7 @@ client.login(process.env.TOKEN);
 
 app.post("/actions", async (req, res, next) => {
 	const cmd = req.body.msg;
-	if (cmd.startsWith("เปิดเพลง")) {
+	if (cmd.startsWith("เปิดเพลง") || cmd.startsWith("play") ) {
 		const myServer = servers["552497873116463107"];
 		const url = await searchYoutube(cmd);
 		if (!url) return;
@@ -163,10 +163,53 @@ app.post("/actions", async (req, res, next) => {
 			message.react("⏯️");
 			message.react("⏹️");
 		});
-	} else if (cmd.startsWith("ปิดเพลง") || cmd.startsWith("เปลี่ยนเพลง")) {
+	} else if (cmd.startsWith("ปิดเพลง") || cmd.startsWith("เปลี่ยนเพลง") || cmd.startsWith("หยุด"))  {
 		const myServer = servers["552497873116463107"];
 		myServer.dispatcher.end();
-	}
+	}else if (cmd.startsWith('เพิ่มเพลง')){
+        const myServer = servers["552497873116463107"];
+		const url = await searchYoutube(cmd.split('เพิ่มเพลง')[1]);
+		if (!url) return;
+
+		myServer.queue.push(url)
+
+		emb.setTitle(`[Voice] เพิ่มเพลง`)
+			.setColor(0xf2c04e)
+			.setDescription(
+				`[${info.videoDetails.title}](https://youtu.be/${info.videoDetails.videoId}) [ https://youtu.be/${info.videoDetails.videoId} ]` 
+
+			)
+			.addField("tips", "-p url\n-play url");
+		channel.send(emb).then((message) => {
+			message.react("⏯️");
+			message.react("⏹️");
+		});
+    }else if(cmd.startsWith('คิว')){
+        const myServer = servers["552497873116463107"];
+        if (myServer && myServer.queue) {
+            playlist = await Promise.all(
+                myServer.queue.map(async (url, index) => {
+                    const name = await ytdl.getBasicInfo(url);
+
+                    const result =
+                        (index + 1).toString() +
+                        ". " +
+                        `[${name.videoDetails.title}](https://youtu.be/${name.videoDetails.videoId}) [ https://youtu.be/${name.videoDetails.videoId} ]` +
+                        "\n";
+
+                    return result;
+                })
+            );
+        }
+        embed = new MessageEmbed()
+            .setTitle("รายการ")
+
+            .setColor(0x00a352)
+            .setDescription(playlist)
+            .addField("tips", "-show");
+
+        channel.send(embed);
+    }
 	return res.send(200);
 });
 app.listen(80, () => {
