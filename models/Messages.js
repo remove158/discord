@@ -25,7 +25,7 @@ exports.addQueueMessage = async(url , header="Message") => {
 			.setDescription(
 				`[${info.videoDetails.title}](https://youtu.be/${info.videoDetails.videoId}) [ https://youtu.be/${info.videoDetails.videoId} ]` 
 			)
-			.addField("**TIPS**", "-q url\n** Voice Control ** \n - https://osmdiscordbot.herokuapp.com   :) enjoy ! ");
+			.addField("**TIPS**", "-p <url/name>\n** Voice Control ** \n - https://osmdiscordbot.herokuapp.com   :) enjoy ! ");
     return emb;
 }
 
