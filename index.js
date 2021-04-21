@@ -1,4 +1,3 @@
-
 const Discord = require("discord.js");
 const client = new Discord.Client();
 const ytdl = require("ytdl-core");
@@ -11,27 +10,27 @@ const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const path = require('path')
+const path = require("path");
 const { Player } = require("discord-player");
 const player = new Player(client);
-const config = require('./config.json')
+const config = require("./config.json");
 client.player = player;
 
 app.use(cors({ origin: true }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.set('views', path.join(__dirname,'views'))
-app.set('view engine','ejs')
-app.set(express.static(path.join(__dirname, 'public')))
+app.set("views", path.join(__dirname, "views"));
+app.set("view engine", "ejs");
+app.set(express.static(path.join(__dirname, "public")));
 
-
-
-client.player.on("trackStart" , async(message , track)=> {
-    const queues = client.player.getQueue(message).tracks;
-    if (queues) {
-        message.channel.send(await Messages.playSongMessage(track.url , "Auto" ,queues))
-    }
-})
+client.player.on("trackStart", async (message, track) => {
+	const queues = client.player.getQueue(message).tracks;
+	if (queues) {
+		message.channel.send(
+			await Messages.playSongMessage(track.url, "Auto", queues)
+		);
+	}
+});
 client.on("ready", () => {
 	console.log("The client is ready !");
 
@@ -125,7 +124,7 @@ client.on("ready", () => {
 	});
 });
 
-client.login(process.env.TOKEN)
+client.login(process.env.TOKEN);
 const VOICE_ID = `552497873116463107`;
 app.post("/actions", async (req, res, next) => {
 	const cmd = req.body.msg;
@@ -151,27 +150,31 @@ app.post("/actions", async (req, res, next) => {
 				client.player.skip(myServer.message);
 			}
 		);
-        handles.voice(
-			cmd,
-			["หยุด","พัก"],
-			async () => {
-				client.player.pause(myServer.message);
-			}
-		);
-        handles.voice(
-			cmd,
-			["เล่น","ต่อ","เล่นต่อ"],
-			async () => {
-				client.player.resume(myServer.message);
-			}
-		);
-        handles.voice(
-			cmd,
-			["สัลบ","Shuffle"],
-			async () => {
-				client.player.shuffle(myServer.message);
-			}
-		);
+		handles.voice(cmd, ["หยุด", "พัก"], async () => {
+			client.player.pause(myServer.message);
+		});
+		handles.voice(cmd, ["เล่น", "ต่อ", "เล่นต่อ"], async () => {
+			client.player.resume(myServer.message);
+		});
+
+		handles.voice(cmd, ["สลับ", "Shuffle"], async () => {
+			client.player.shuffle(myServer.message);
+		});
+
+		handles.voice(cmd, ["ข้าม", "ไป", "ไปที่", "ไปตอน"], async () => {
+			const txt = cmd;
+			const min = txt.match(/\d+ นาที/)
+				? parseInt(txt.match(/\d+ นาที/)[0].split(" ")[0])
+				: 0;
+			const sec = txt.match(/\d+ วินาที/)
+				? parseInt(txt.match(/\d+ วินาที/)[0].split(" ")[0])
+				: 0;
+			const half = txt.match("ครึ่ง");
+			const mil = (min * 60 + sec) * 1000 + (half ? 30 * 1000 : 0);
+            client.player.setPosition(myServer.message , mil)
+            myServer.message.send(`**[Voice]** ${txt}`)
+		});
+
 		handles.voice(cmd, ["Q", "q"], async () => {
 			const queues = client.player.getQueue(myServer.message).tracks;
 			if (queues) {
@@ -183,10 +186,10 @@ app.post("/actions", async (req, res, next) => {
 	return res.sendStatus(200);
 });
 
-app.get('/',(req,res)=> {
-    res.render('main')
-})
+app.get("/", (req, res) => {
+	res.render("main");
+});
 
-app.listen(process.env.PORT || 8080 , () => {
+app.listen(process.env.PORT || 8080, () => {
 	console.log(`Server listenning on port 8080  !`);
 });
