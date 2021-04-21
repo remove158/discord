@@ -13,7 +13,7 @@ const cors = require("cors");
 const path = require('path')
 const { Player } = require("discord-player");
 const player = new Player(client);
-
+const config = require('./config.json')
 client.player = player;
 
 app.use(cors({ origin: true }));
@@ -123,7 +123,7 @@ client.on("ready", () => {
 	});
 });
 
-client.login("ODA1ODU2NjIwMDI2MjY1NjEw.YBg-dg.bJ3ZHoA55naCcxM_m9-hz64hX4Q");
+client.login(config.token)
 const VOICE_ID = `552497873116463107`;
 app.post("/actions", async (req, res, next) => {
 	const cmd = req.body.msg;
