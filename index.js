@@ -167,6 +167,6 @@ app.post("/actions", async (req, res, next) => {
 	}
 	return res.send(200);
 });
-app.listen(443, () => {
-	console.log("Voice listenning on port 443!");
+app.listen(80, () => {
+	console.log("Voice listenning on port 80!");
 });
