@@ -2,27 +2,30 @@ require("dotenv").config();
 const Discord = require("discord.js");
 const client = new Discord.Client();
 const ytdl = require("ytdl-core");
-const https = require('https')
-const fs = require('fs')
-const path = require('path')
 const searchYoutube = require("./algorithm/seachYoutubeAlgo");
 const Messages = require("./models/Messages");
 const handles = require("./handles/");
-let servers = {};
+const servers = {};
 const playTheSong = require("./algorithm/playMusicAlgo");
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const { Player, Queue } = require("discord-player");
+const player = new Player(client);
+
+client.player = player;
+
 app.use(cors({ origin: true }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
+
 var channel;
 
-const RESET = ()=>{
-    servers = {}
-}
+const RESET = () => {
+	servers = {};
+};
 client.on("ready", () => {
 	console.log("The client is ready !");
 	channel = client.channels.cache.find(
@@ -39,13 +42,15 @@ client.on("ready", () => {
 		message.channel.send(Messages.helpMessage);
 	});
 
-    handles.command(client, ["show"],async (message) => {
-        message.delete();
-		message.channel.send(await Messages.showQueue(servers[message.guild.id],"Message") );
+	handles.command(client, ["show"], async (message) => {
+		message.delete();
+		const queues = client.player.getQueue(message).tracks;
+		if (queues) {
+			message.channel.send(await Messages.showQueue(queues));
+		}
 	});
-    handles.command(client, ["reset"],async (message) => {
-        message.delete();
-		RESET();
+	handles.command(client, ["reset"], async (message) => {
+		message.delete();
 	});
 
 	handles.command(client, ["help"], (message) => {
@@ -58,199 +63,103 @@ client.on("ready", () => {
 		});
 	});
 
-    handles.command(client, ["get"], (message) => {
+	handles.command(client, ["get"], (message) => {
 		message.delete();
 		message.channel.send(`
         Channel Member Id : ${message.member.voice.channel.id}
         Guild Id : ${message.guild.id}
         Text Channel Id : ${message.channel.id}
         `);
-		
 	});
 
 	//to play a song
 	handles.command(client, ["p", "play"], async (message) => {
+		servers[message.guild.id] = {};
+		servers[message.guild.id].message = message;
+		servers[message.guild.id].playing = true;
 		let args = message.content.trim().split(/\s+/).slice(1).join(" ");
 		message.delete();
 		const url = await searchYoutube(args);
-		if (!url) return;
-		if (!servers[message.guild.id]?.queue) {
-			servers[message.guild.id] = {
-				queue: [],
-			};
-		}
-		const myServer = servers[message.guild.id];
-		myServer.queue= [url];
-        if(myServer.dispatcher){
-            myServer.dispatcher.end();
-        }
-       
-        message.member.voice.channel.join().then(function (connection) {
-            playTheSong(myServer, connection);
-           
-        });
-		
-		message.channel.send(await Messages.playSongMessage(url)).then((message) => {
-			message.react("⏯️");
-			message.react("⏹️");
-		});
+		client.player.play(message, url);
+		message.channel
+			.send(await Messages.playSongMessage(url))
+			.then((message) => {
+				message.react("⏯️");
+				message.react("⏹️");
+			});
 	});
-    
-    handles.command(client, ["q", "queue"], async (message) => {
-		let args = message.content.trim().split(/\s+/).slice(1).join(" ");
-		message.delete();
-		const url = await searchYoutube(args);
-		if (!url) return;
-		if (!servers[message.guild.id]?.queue) {
-			servers[message.guild.id] = {
-				queue: [],
-			};
-		}
-        const myServer = servers[message.guild.id];
-		if(myServer.queue.length >=1) {
-            myServer.queue.push(url);
-        }else{
-            myServer.queue = [url]
-            message.member.voice.channel.join().then(function (connection) {
-                playTheSong(myServer, connection);
-               
-            });
-        }
-     
-       
-       
-		
-		message.channel.send(await Messages.addQueueMessage(url)).then((message) => {
-			message.react("⏯️");
-			message.react("⏹️");
-		});
-	});
+
 	handles.command(client, ["skip"], async (message) => {
 		message.delete();
-		const myServer = servers[message.guild.id];
-		myServer.dispatcher.end();
+		client.player.skip(message);
+	});
+
+	handles.command(client, ["pause"], async (message) => {
+		message.delete();
+		client.player.pause(message);
+	});
+
+	handles.command(client, ["resume"], async (message) => {
+		message.delete();
+		client.player.resume(message);
 	});
 
 	// handle user reaction
 	handles.reaction(client, ["⏹️"], (react, user) => {
-		const myServer = servers[react.message.guild.id];
-		myServer.dispatcher.end();
+		client.player.skip(servers[react.message.guild.id].message);
 	});
 
 	handles.reaction(client, ["⏯️"], async (react, user) => {
-		react.message.delete();
+		if (servers[react.message.guild.id].playing) {
+			client.player.pause(servers[react.message.guild.id].message);
+		} else {
+			client.player.resume(servers[react.message.guild.id].message);
+		}
 
-		const myServer = servers[react.message.guild.id];
-		const txt = react.message.embeds[0].description;
-		const start = txt.indexOf("https://");
-		const stop = txt.indexOf(" ", start);
-		let url = txt.slice(start, stop);
-		url = url.trim().trim(")");
-
-		react.message.channel
-			.send(await Messages.playSongMessage(url, "React"))
-			.then((message) => {
-				message.react("⏯️");
-				message.react("⏹️");
-			});
-		myServer.queue = [url];
-		react.message.guild.members.cache
-			.get(user.id)
-			.voice.channel.join()
-			.then(function (connection) {
-				playTheSong(myServer, connection);
-			});
-        
+		servers[react.message.guild.id].playing = !servers[
+			react.message.guild.id
+		];
 	});
 });
 
 client.login(process.env.TOKEN);
-const VOICE_ID ="552497873116463107"
-const initRoom =async ()=>{
-    if(!servers[VOICE_ID]){
-        servers[VOICE_ID] = { queue: [] }
-        if(!servers[VOICE_ID].connection){
-            await client.channels.cache.get('687139603718996015').join().then(function (connection) {
-                servers[VOICE_ID].connection = connection;
-            });
-        }
-    }
-
-    if(!servers[VOICE_ID].connection.play){
-        await client.channels.cache.get('687139603718996015').join().then(function (connection) {
-            servers[VOICE_ID].connection = connection;
-        });
-    }
-    
-   
-   
-}
+const VOICE_ID = `552497873116463107`;
 app.post("/actions", async (req, res, next) => {
 	const cmd = req.body.msg;
-    await initRoom();
-    const myServer = servers[VOICE_ID];
-	handles.voice(cmd, ["เปิดเพลง", "play"], async () => {
-        
-		const url = await searchYoutube(cmd.split('เพลง')[1]);
-		if (!url) return;
+	const myServer = servers[VOICE_ID];
+	if (myServer && myServer.message) {
+		handles.voice(cmd, ["เปิดเพลง", "play"], async () => {
+			const url = await searchYoutube(cmd.split("เพลง")[1]);
+			if (!url) return;
+			client.player.play(myServer.message, url);
 
-		myServer.queue.push(url);
-        if(myServer.dispatcher){
+			myServer.message.channel
+				.send(await Messages.playSongMessage(url, "Voice"))
+				.then((message) => {
+					message.react("⏯️");
+					message.react("⏹️");
+				});
+		});
 
-            myServer.dispatcher.end();
-        }
+		handles.voice(
+			cmd,
+			["ปิดเพลง", "เปลี่ยนเพลง", "หยุด", "ปิด"],
+			async () => {
+				client.player.skip(myServer.message);
+			}
+		);
 
-		playTheSong(myServer, myServer.connection);
-
-		channel
-			.send(await Messages.playSongMessage(url, "Voice"))
-			.then((message) => {
-				message.react("⏯️");
-				message.react("⏹️");
-			});
-	});
-
-	handles.voice(cmd, ["ปิดเพลง", "เปลี่ยนเพลง", "หยุด","ปิด"], async () => {
-	
-		myServer.dispatcher.end();
-	});
-
-	handles.voice(cmd, ["เพิ่มเพลง"], async () => {
-	
-		const url = await searchYoutube(cmd);
-		if (!url) return;
-
-		if(myServer.queue.length >=1) {
-            myServer.queue.push(url);
-        }else{
-            myServer.queue = [url]
-            playTheSong(myServer,myServer.connection)
-        }
-
-		channel
-			.send(await Messages.addQueueMessage(url, "Voice"))
-			.then((message) => {
-				message.react("⏯️");
-				message.react("⏹️");
-			});
-	});
-
-	handles.voice(cmd, [ "Q", "q"], async () => {
-
-		channel.send(await Messages.showQueue(myServer,"Voice"));
-	});
-	handles.voice(cmd, [ "รีเซ็ต", "reset","Reset"], async () => {
-
-		RESET();
-	});
+		handles.voice(cmd, ["Q", "q"], async () => {
+			const queues = client.player.getQueue(myServer.message).tracks;
+			if (queues) {
+				myServer.message.channel.send(await Messages.showQueue(queues));
+			}
+		});
+	}
 
 	return res.sendStatus(200);
 });
 
-const httpsOptions ={
-    cert : fs.readFileSync(path.join(__dirname,'ssl',"server.crt")),
-    key : fs.readFileSync(path.join(__dirname,'ssl',"server.key"))
-}
-https.createServer( httpsOptions , app).listen( 443 , ()=>{
-    console.log("Server listenning on port 443 !");
-})
+app.listen(process.env.PORT , () => {
+	console.log("Server listenning on port 443 !");
+});

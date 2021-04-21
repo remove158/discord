@@ -31,7 +31,7 @@ exports.addQueueMessage = async(url , header="Message") => {
 
 exports.playSongMessage = async(url ,header="Message") => {
     const info = await ytdl.getInfo(url);
-    const title = `[${header}] เล่นเพลงทันที`
+    const title = `[${header}] เพิ่มเพลงเข้าคิว`
 		const emb = new Discord.MessageEmbed()
 			.setTitle(title)
 			.setColor(0xf2c04e)
@@ -42,18 +42,15 @@ exports.playSongMessage = async(url ,header="Message") => {
         return emb;
 }
 
-exports.showQueue = async(myServer,header="Voice")=>{
-        if(!myServer.queue){
-            myServer.queue = []
-        }
+exports.showQueue = async(queue,header="Voice")=>{
+  
         const playlist = await Promise.all(
-            myServer.queue.map(async (url, index) => {
-                const name = await ytdl.getBasicInfo(url);
+            queue.map(async (item, index) => {
 
                 const result =
                     (index + 1).toString() +
                     ". " +
-                    `[${name.videoDetails.title}](https://youtu.be/${name.videoDetails.videoId}) [ https://youtu.be/${name.videoDetails.videoId} ]`
+                    `[${item.title}](${item.url}) [${item.url} ]`
                 return result;
             })
         );
