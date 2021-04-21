@@ -72,10 +72,14 @@ client.on("ready", () => {
 			};
 		}
 		const myServer = servers[message.guild.id];
-		myServer.queue.push(url);
-
+		myServer.queue= [url];
+        if(myServer.dispatcher){
+            myServer.dispatcher.end();
+        }
+       
         message.member.voice.channel.join().then(function (connection) {
             playTheSong(myServer, connection);
+           
         });
 		
 		message.channel.send(await Messages.playSongMessage(url)).then((message) => {
@@ -84,6 +88,35 @@ client.on("ready", () => {
 		});
 	});
     
+    handles.command(client, ["q", "queue"], async (message) => {
+		let args = message.content.trim().split(/\s+/).slice(1).join(" ");
+		message.delete();
+		const url = await searchYoutube(args);
+		if (!url) return;
+		if (!servers[message.guild.id]?.queue) {
+			servers[message.guild.id] = {
+				queue: [],
+			};
+		}
+        const myServer = servers[message.guild.id];
+		if(myServer.queue.length >=1) {
+            myServer.queue.push(url);
+        }else{
+            myServer.queue = [url]
+            message.member.voice.channel.join().then(function (connection) {
+                playTheSong(myServer, connection);
+               
+            });
+        }
+     
+       
+       
+		
+		message.channel.send(await Messages.addQueueMessage(url)).then((message) => {
+			message.react("⏯️");
+			message.react("⏹️");
+		});
+	});
 	handles.command(client, ["skip"], async (message) => {
 		message.delete();
 		const myServer = servers[message.guild.id];

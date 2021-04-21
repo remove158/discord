@@ -19,19 +19,19 @@ exports.helpMessage = `
 exports.addQueueMessage = async(url , header="Message") => {
     const emb = new Discord.MessageEmbed();
 		const info = await ytdl.getInfo(url);
-        const title = `[${header}] เพิ่มเพลง`
+        const title = `[${header}] เพิ่มเพลงเข้าคิว`
 		emb.setTitle(title)
 			.setColor(0xf2c04e)
 			.setDescription(
 				`[${info.videoDetails.title}](https://youtu.be/${info.videoDetails.videoId}) [ https://youtu.be/${info.videoDetails.videoId} ]` 
 			)
-			.addField("**TIPS**", "-p url\n-play url\n** Voice Control ** \n - https://osmdiscordbot.web.app/   :) enjoy ! ");
+			.addField("**TIPS**", "-q url\n** Voice Control ** \n - https://osmdiscordbot.web.app/   :) enjoy ! ");
     return emb;
 }
 
 exports.playSongMessage = async(url ,header="Message") => {
     const info = await ytdl.getInfo(url);
-    const title = `[${header}] เล่นเพลง`
+    const title = `[${header}] เล่นเพลงทันที`
 		const emb = new Discord.MessageEmbed()
 			.setTitle(title)
 			.setColor(0xf2c04e)
