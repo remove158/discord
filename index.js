@@ -177,7 +177,7 @@ app.post("/actions", async (req, res, next) => {
 		const url = await searchYoutube(cmd);
 		if (!url) return;
 
-		if(myServer.queue.length >1) {
+		if(myServer.queue.length >=1) {
             myServer.queue.push(url);
         }else{
             myServer.queue = [url]
