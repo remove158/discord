@@ -146,9 +146,23 @@ app.post("/actions", async (req, res, next) => {
 
 		handles.voice(
 			cmd,
-			["ปิดเพลง", "เปลี่ยนเพลง", "หยุด", "ปิด"],
+			["ปิดเพลง", "เปลี่ยนเพลง", "ข้าม", "ปิด"],
 			async () => {
 				client.player.skip(myServer.message);
+			}
+		);
+        handles.voice(
+			cmd,
+			["หยุด","พัก"],
+			async () => {
+				client.player.pause(myServer.message);
+			}
+		);
+        handles.voice(
+			cmd,
+			["เล่น","ต่อ","เล่นต่อ"],
+			async () => {
+				client.player.resume(myServer.message);
 			}
 		);
 
