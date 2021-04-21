@@ -17,7 +17,7 @@ exports.helpMessage = `
 exports.addQueueMessage = async(url , header="Message") => {
     const emb = new Discord.MessageEmbed();
 		const info = await ytdl.getInfo(url);
-        const title = `[${header}] เล่นเพลง`
+        const title = `[${header}] เพิ่มเพลง`
 		emb.setTitle(title)
 			.setColor(0xf2c04e)
 			.setDescription(

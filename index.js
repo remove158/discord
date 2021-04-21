@@ -20,7 +20,7 @@ var channel;
 client.on("ready", () => {
 	console.log("The client is ready !");
 	channel = client.channels.cache.find(
-		(channel) => channel.name === "osm-bot"
+		(channel) => channel.id == "824324108681871400"
 	);
 
 	//to clear channel
@@ -43,6 +43,16 @@ client.on("ready", () => {
 		});
 	});
 
+    handles.command(client, ["get"], (message) => {
+		message.delete();
+		message.channel.send(`
+        Channel Member Id : ${message.member.voice.channel.id}
+        Guild Id : ${message.guild.id}
+        Text Channel Id : ${message.channel.id}
+        `);
+		
+	});
+
 	//to play a song
 	handles.command(client, ["p", "play"], async (message) => {
 		let args = message.content.trim().split(/\s+/).slice(1).join(" ");
@@ -56,19 +66,11 @@ client.on("ready", () => {
 		}
 		const myServer = servers[message.guild.id];
 		myServer.queue.push(url);
-		if (myServer.queue.length === 1) {
-			message.member.voice.channel.join().then(function (connection) {
-				playTheSong(myServer, connection);
-			});
-		}
 
-		if (!message.guild.voice || !message.guild.voice.connection) {
-			message.member.voice.channel.join().then(function (connection) {
-				myServer.connection = connection;
-				playTheSong(myServer, connection);
-			});
-		}
-
+        message.member.voice.channel.join().then(function (connection) {
+            playTheSong(myServer, connection);
+        });
+		
 		message.channel.send(await Messages.playSongMessage(url)).then((message) => {
 			message.react("⏯️");
 			message.react("⏹️");
@@ -108,46 +110,74 @@ client.on("ready", () => {
 			.get(user.id)
 			.voice.channel.join()
 			.then(function (connection) {
-				myServer.connection = connection;
 				playTheSong(myServer, connection);
 			});
+        
 	});
 });
 
 client.login(process.env.TOKEN);
+const VOICE_ID ="552497873116463107"
+const initRoom =async ()=>{
+    if(!servers[VOICE_ID]){
+        servers[VOICE_ID] = { queue: [] }
+        if(!servers[VOICE_ID].connection){
+            await client.channels.cache.get('687139603718996015').join().then(function (connection) {
+                servers[VOICE_ID].connection = connection;
+            });
+        }
+    }
 
+    if(!servers[VOICE_ID].connection.play){
+        await client.channels.cache.get('687139603718996015').join().then(function (connection) {
+            servers[VOICE_ID].connection = connection;
+        });
+    }
+    
+   
+   
+}
 app.post("/actions", async (req, res, next) => {
 	const cmd = req.body.msg;
+    await initRoom();
+    const myServer = servers[VOICE_ID];
 	handles.voice(cmd, ["เปิดเพลง", "play"], async () => {
-		const myServer = servers["552497873116463107"];
         
 		const url = await searchYoutube(cmd.split('เพลง')[1]);
 		if (!url) return;
 
 		myServer.queue.push(url);
-		myServer.dispatcher.end();
+        if(myServer.dispatcher){
+
+            myServer.dispatcher.end();
+        }
 
 		playTheSong(myServer, myServer.connection);
 
 		channel
-			.send(await Messages.playSongMessage(url, "React"))
+			.send(await Messages.playSongMessage(url, "Voice"))
 			.then((message) => {
 				message.react("⏯️");
 				message.react("⏹️");
 			});
 	});
 
-	handles.voice(cmd, ["ปิดเพลง", "เปลี่ยนเพลง", "หยุด"], async () => {
-		const myServer = servers["552497873116463107"];
+	handles.voice(cmd, ["ปิดเพลง", "เปลี่ยนเพลง", "หยุด","ปิด"], async () => {
+	
 		myServer.dispatcher.end();
 	});
 
 	handles.voice(cmd, ["เพิ่มเพลง"], async () => {
-		const myServer = servers["552497873116463107"];
+	
 		const url = await searchYoutube(cmd);
 		if (!url) return;
 
-		myServer.queue.push(url);
+		if(myServer.queue.length >1) {
+            myServer.queue.push(url);
+        }else{
+            myServer.queue = [url]
+            playTheSong(myServer,myServer.connection)
+        }
 
 		channel
 			.send(await Messages.addQueueMessage(url, "Voice"))
@@ -157,10 +187,9 @@ app.post("/actions", async (req, res, next) => {
 			});
 	});
 
-	handles.voice(cmd, ["เพิ่มเพลง", "Q", "q"], async () => {
-		const myServer = servers["552497873116463107"];
-        console.log("55555");
-		channel.send(await Messages.showQueue(myServer));
+	handles.voice(cmd, [ "Q", "q"], async () => {
+
+		channel.send(await Messages.showQueue(myServer,"Voice"));
 	});
 
 	return res.sendStatus(200);
