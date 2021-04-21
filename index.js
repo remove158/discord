@@ -5,19 +5,21 @@ const ytdl = require("ytdl-core");
 const command = require("./command");
 const reaction = require("./reaction");
 const searchYoutube = require("./algorithm/seachYoutubeAlgo");
-const helpMessage = require('./helpMessage')
+const helpMessage = require("./helpMessage");
 const servers = {};
 const playTheSong = require("./algorithm/playMusicAlgo");
-const express = require('express');
+const express = require("express");
 const app = express();
-const bodyParser = require('body-parser')
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({ extended: true }))
-app.use(express.static('public'))
-var channel ;
+const bodyParser = require("body-parser");
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static("public"));
+var channel;
 client.on("ready", () => {
 	console.log("The client is ready !");
-    channel = client.channels.cache.find(channel => channel.name === "osm-bot")
+	channel = client.channels.cache.find(
+		(channel) => channel.name === "osm-bot"
+	);
 
 	//to clear channel
 	command(client, ["cc", "clear"], (message) => {
@@ -26,7 +28,7 @@ client.on("ready", () => {
 				message.channel.bulkDelete(results);
 			});
 		}
-        message.channel.send(helpMessage);
+		message.channel.send(helpMessage);
 	});
 
 	command(client, ["help"], (message) => {
@@ -45,7 +47,7 @@ client.on("ready", () => {
 		message.delete();
 		const url = await searchYoutube(args);
 		if (!url) return;
-		if (!servers[message.guild.id]) {
+		if (!servers[message.guild.id]?.queue) {
 			servers[message.guild.id] = {
 				queue: [],
 			};
@@ -60,6 +62,7 @@ client.on("ready", () => {
 
 		if (!message.guild.voice || !message.guild.voice.connection) {
 			message.member.voice.channel.join().then(function (connection) {
+				myServer.connection = connection;
 				playTheSong(myServer, connection);
 			});
 		}
@@ -74,21 +77,21 @@ client.on("ready", () => {
 					`queue by ${message.member}`
 			)
 			.addField("tips", "-p url\n-play url");
-            message.channel.send(emb).then((message) => {
+		message.channel.send(emb).then((message) => {
 			message.react("⏯️");
 			message.react("⏹️");
 		});
 	});
 
 	command(client, ["skip"], async (message) => {
-        message.delete()
+		message.delete();
 		const myServer = servers[message.guild.id];
 		myServer.dispatcher.end();
-    });
-    command(client,["test"] , async(message)=>{
-        message.delete();
-        console.log(message.guild.id);
-    })
+	});
+	command(client, ["test"], async (message) => {
+		message.delete();
+		console.log(message.guild.id);
+	});
 	// handle user reaction
 	reaction(client, ["⏹️"], (react, user) => {
 		const myServer = servers[react.message.guild.id];
@@ -97,6 +100,7 @@ client.on("ready", () => {
 
 	reaction(client, ["⏯️"], async (react, user) => {
 		react.message.delete();
+
 		const myServer = servers[react.message.guild.id];
 		const txt = react.message.embeds[0].description;
 		const start = txt.indexOf("https://");
@@ -123,6 +127,7 @@ client.on("ready", () => {
 			.get(user.id)
 			.voice.channel.join()
 			.then(function (connection) {
+				myServer.connection = connection;
 				playTheSong(myServer, connection);
 			});
 	});
@@ -130,19 +135,38 @@ client.on("ready", () => {
 
 client.login(process.env.TOKEN);
 
+app.post("/actions", async (req, res, next) => {
+	const cmd = req.body.msg;
+	if (cmd.startsWith("เปิดเพลง")) {
+		const myServer = servers["552497873116463107"];
+		const url = await searchYoutube(cmd);
+		if (!url) return;
 
-app.post("/actions", (req,res,next)=>{
-    const cmd = req.body.msg;
-    if(cmd.startsWith('เปิดเพลง')){
-        const myServer = servers['552497873116463107']
+		myServer.queue.push(url)
+        myServer.dispatcher.end();
+        
+		playTheSong(myServer, myServer.connection);
+
+		const emb = new Discord.MessageEmbed();
+		const info = await ytdl.getInfo(url);
+
+		emb.setTitle(`[Voice] เปิดเพลง`)
+			.setColor(0xf2c04e)
+			.setDescription(
+				`[${info.videoDetails.title}](https://youtu.be/${info.videoDetails.videoId}) [ https://youtu.be/${info.videoDetails.videoId} ]` 
+
+			)
+			.addField("tips", "-p url\n-play url");
+		channel.send(emb).then((message) => {
+			message.react("⏯️");
+			message.react("⏹️");
+		});
+	} else if (cmd.startsWith("ปิดเพลง") || cmd.startsWith("เปลี่ยนเพลง")) {
+		const myServer = servers["552497873116463107"];
 		myServer.dispatcher.end();
-       channel.send(`-p ${cmd.split('เปิดเพลง')[1]}`)
-    }else if(cmd.startsWith('ปิดเพลง') || cmd.startsWith('เปลี่ยนเพลง')){
-        const myServer = servers['552497873116463107']
-		myServer.dispatcher.end(); 
-    }
-   return res.send(200)
-})
-app.listen(80, ()=>{
-    console.log("Voice listenning on port 3000!");
-})
+	}
+	return res.send(200);
+});
+app.listen(443, () => {
+	console.log("Voice listenning on port 443!");
+});

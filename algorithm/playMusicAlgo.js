@@ -10,11 +10,11 @@ const play = (server, connection) => {
 		if (server.queue[0]) {
 			play(server, connection);
 		} else {
-			setTimeout(() => {
-				if (server.queue.length === 0) {
-					connection.disconnect();
-				}
-			}, 1.5 * 60 * 1000);
+			// setTimeout(() => {
+			// 	if (server.queue.length === 0) {
+			// 		connection.disconnect();
+			// 	}
+			// }, 1.5 * 60 * 1000);
 		}
 	});
 };
