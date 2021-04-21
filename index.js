@@ -22,20 +22,17 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.set('views', path.join(__dirname,'views'))
 app.set('view engine','ejs')
 app.set(express.static(path.join(__dirname, 'public')))
-var channel;
 
-const RESET = () => {
-	servers = {};
-};
+
 
 client.player.on("trackStart" , async(message , track)=> {
-    message.channel.send(await Messages.playSongMessage(track.url , "Auto"))
+    const queues = client.player.getQueue(message).tracks;
+    if (queues) {
+        message.channel.send(await Messages.playSongMessage(track.url , "Auto" ,queues))
+    }
 })
 client.on("ready", () => {
 	console.log("The client is ready !");
-	channel = client.channels.cache.find(
-		(channel) => channel.id == "824324108681871400"
-	);
 
 	//to clear channel
 	handles.command(client, ["cc", "clear"], (message) => {

@@ -29,8 +29,18 @@ exports.addQueueMessage = async(url , header="Message") => {
     return emb;
 }
 
-exports.playSongMessage = async(url ,header="Message") => {
+exports.playSongMessage = async(url ,header="Message",queue=[]) => {
     const info = await ytdl.getInfo(url);
+    const playlist = await Promise.all(
+        queue.map(async (item, index) => {
+
+            const result =
+                (index + 1).toString() +
+                ". " +
+                `[${item.title}](${item.url}) [${item.url} ]`
+            return result;
+        })
+    );
     const title = `[${header}] กำลังเล่นเพลง`
 		const emb = new Discord.MessageEmbed()
 			.setTitle(title)
@@ -38,7 +48,7 @@ exports.playSongMessage = async(url ,header="Message") => {
 			.setDescription(
 				`[${info.videoDetails.title}](https://youtu.be/${info.videoDetails.videoId}) [ https://youtu.be/${info.videoDetails.videoId} ]`
 			)
-			.addField("**TIPS**", "-p url\n-play url\n** Voice Control ** \n - https://osmdiscordbot.herokuapp.com   :) enjoy !");
+			.addField("**Queues**", `${playlist}\n** Voice Control ** \n - https://osmdiscordbot.herokuapp.com   :) enjoy !`);
         return emb;
 }
 
