@@ -25,7 +25,7 @@ exports.addQueueMessage = async(url , header="Message") => {
 			.setDescription(
 				`[${info.videoDetails.title}](https://youtu.be/${info.videoDetails.videoId}) [ https://youtu.be/${info.videoDetails.videoId} ]` 
 			)
-			.addField("tips", "-p url\n-play url\n** Voice Control ** - https://osmdiscordbot.web.app/   :) enjoy ! ");
+			.addField("**TIPS**", "-p url\n-play url\n** Voice Control ** \n - https://osmdiscordbot.web.app/   :) enjoy ! ");
     return emb;
 }
 
@@ -38,7 +38,7 @@ exports.playSongMessage = async(url ,header="Message") => {
 			.setDescription(
 				`[${info.videoDetails.title}](https://youtu.be/${info.videoDetails.videoId}) [ https://youtu.be/${info.videoDetails.videoId} ]`
 			)
-			.addField("tips", "-p url\n-play url\n** Voice Control ** - https://osmdiscordbot.web.app/   :) enjoy !");
+			.addField("**TIPS**", "-p url\n-play url\n** Voice Control ** \n - https://osmdiscordbot.web.app/   :) enjoy !");
         return emb;
 }
 
@@ -63,7 +63,7 @@ exports.showQueue = async(myServer,header="Voice")=>{
 
             .setColor(0x00a352)
             .setDescription(playlist|| "None")
-            .addField("tips", "-show \n ** Voice Control ** - https://osmdiscordbot.web.app/   :) enjoy !");
+            .addField("**TIPS**", "-show \n ** Voice Control **  \n- https://osmdiscordbot.web.app/   :) enjoy !");
 
         return embed;
 }
