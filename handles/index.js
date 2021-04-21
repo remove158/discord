@@ -1,4 +1,6 @@
 const command = require('./command')
-const react = require('./reaction')
+const reaction = require('./reaction')
 const voice = require('./voice')
-exports = {command ,react, voice}
+exports.command = command;
+exports.reaction= reaction
+exports.voice = voice

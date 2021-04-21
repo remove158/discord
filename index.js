@@ -3,9 +3,9 @@ const Discord = require("discord.js");
 const client = new Discord.Client();
 const ytdl = require("ytdl-core");
 
-const handles = require("./handles/");
 const searchYoutube = require("./algorithm/seachYoutubeAlgo");
 const Messages = require("./models/Messages");
+const handles = require("./handles/");
 const servers = {};
 const playTheSong = require("./algorithm/playMusicAlgo");
 const express = require("express");
@@ -32,8 +32,8 @@ client.on("ready", () => {
 		}
 		message.channel.send(Messages.helpMessage);
 	});
-    
-	command(client, ["help"], (message) => {
+
+	handles.command(client, ["help"], (message) => {
 		message.delete();
 		message.channel.send(Messages.helpMessage);
 		client.user.setPresence({
@@ -44,7 +44,7 @@ client.on("ready", () => {
 	});
 
 	//to play a song
-	command(client, ["p", "play"], async (message) => {
+	handles.command(client, ["p", "play"], async (message) => {
 		let args = message.content.trim().split(/\s+/).slice(1).join(" ");
 		message.delete();
 		const url = await searchYoutube(args);
@@ -75,19 +75,19 @@ client.on("ready", () => {
 		});
 	});
 
-	command(client, ["skip"], async (message) => {
+	handles.command(client, ["skip"], async (message) => {
 		message.delete();
 		const myServer = servers[message.guild.id];
 		myServer.dispatcher.end();
 	});
 
 	// handle user reaction
-	reaction(client, ["⏹️"], (react, user) => {
+	handles.reaction(client, ["⏹️"], (react, user) => {
 		const myServer = servers[react.message.guild.id];
 		myServer.dispatcher.end();
 	});
 
-	reaction(client, ["⏯️"], async (react, user) => {
+	handles.reaction(client, ["⏯️"], async (react, user) => {
 		react.message.delete();
 
 		const myServer = servers[react.message.guild.id];
@@ -118,7 +118,7 @@ client.login(process.env.TOKEN);
 
 app.post("/actions", async (req, res, next) => {
 	const cmd = req.body.msg;
-	if (cmd.startsWith("เปิดเพลง") || cmd.startsWith("play")) {
+	handles.voice(cmd, ["เปิดเพลง", "play"], async () => {
 		const myServer = servers["552497873116463107"];
 		const url = await searchYoutube(cmd);
 		if (!url) return;
@@ -134,14 +134,14 @@ app.post("/actions", async (req, res, next) => {
 				message.react("⏯️");
 				message.react("⏹️");
 			});
-	} else if (
-		cmd.startsWith("ปิดเพลง") ||
-		cmd.startsWith("เปลี่ยนเพลง") ||
-		cmd.startsWith("หยุด")
-	) {
+	});
+
+	handles.voice(cmd, ["ปิดเพลง", "เปลี่ยนเพลง", "หยุด"], async () => {
 		const myServer = servers["552497873116463107"];
 		myServer.dispatcher.end();
-	} else if (cmd.startsWith("เพิ่มเพลง")) {
+	});
+
+	handles.voice(cmd, ["เพิ่มเพลง"], async () => {
 		const myServer = servers["552497873116463107"];
 		const url = await searchYoutube(cmd);
 		if (!url) return;
@@ -154,10 +154,13 @@ app.post("/actions", async (req, res, next) => {
 				message.react("⏯️");
 				message.react("⏹️");
 			});
-	} else if (cmd.startsWith("คิว") || cmd.toUpperCase().startsWith("Q")) {
+	});
+
+	handles.voice(cmd, ["เพิ่มเพลง", "Q", "q"], async () => {
 		const myServer = servers["552497873116463107"];
 		channel.send(Messages.showQueue(myServer));
-	}
+	});
+
 	return res.send(200);
 });
 app.listen(80, () => {
