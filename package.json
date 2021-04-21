@@ -29,6 +29,7 @@
         "ffmpeg": "0.0.4",
         "ffmpeg-static": "^4.2.7",
         "fluent-ffmpeg": "^2.1.2",
+        "node-gyp": "^8.0.0",
         "node-opus": "^0.3.3",
         "opusscript": "0.0.8",
         "youtube-search-api": "^1.0.8",
