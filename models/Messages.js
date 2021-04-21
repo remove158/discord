@@ -37,7 +37,7 @@ exports.playSongMessage = async(url ,header="Message",queue=[]) => {
             const result =
                 (index + 1).toString() +
                 ". " +
-                `[${item.title}](${item.url}) [${item.url} ]`
+                `${item.title}  [${item.url} ]`
             return result;
         })
     );
