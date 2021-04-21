@@ -1,3 +1,4 @@
+require('dotenv').config()
 const Discord = require("discord.js");
 const client = new Discord.Client();
 const ytdl = require("ytdl-core");
@@ -124,7 +125,7 @@ client.on("ready", () => {
 	});
 });
 
-client.login(config.token)
+client.login(process.env.TOKEN)
 const VOICE_ID = `552497873116463107`;
 app.post("/actions", async (req, res, next) => {
 	const cmd = req.body.msg;
