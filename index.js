@@ -2,16 +2,18 @@ require("dotenv").config();
 const Discord = require("discord.js");
 const client = new Discord.Client();
 const ytdl = require("ytdl-core");
-const command = require("./command");
-const reaction = require("./reaction");
+const https = require('https')
+const fs = require('fs')
+const path = require('path')
 const searchYoutube = require("./algorithm/seachYoutubeAlgo");
-const helpMessage = require("./helpMessage");
+const Messages = require("./models/Messages");
+const handles = require("./handles/");
 const servers = {};
 const playTheSong = require("./algorithm/playMusicAlgo");
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
-const cors = require('cors');
+const cors = require("cors");
 app.use(cors({ origin: true }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -20,22 +22,27 @@ var channel;
 client.on("ready", () => {
 	console.log("The client is ready !");
 	channel = client.channels.cache.find(
-		(channel) => channel.name === "osm-bot"
+		(channel) => channel.id == "824324108681871400"
 	);
 
 	//to clear channel
-	command(client, ["cc", "clear"], (message) => {
+	handles.command(client, ["cc", "clear"], (message) => {
 		if (message.member.hasPermission("ADMIN")) {
 			message.channel.messages.fetch().then((results) => {
 				message.channel.bulkDelete(results);
 			});
 		}
-		message.channel.send(helpMessage);
+		message.channel.send(Messages.helpMessage);
 	});
 
-	command(client, ["help"], (message) => {
+    handles.command(client, ["show"],async (message) => {
+        message.delete();
+		message.channel.send(await Messages.showQueue(servers[message.guild.id],"Message") );
+	});
+
+	handles.command(client, ["help"], (message) => {
 		message.delete();
-		message.channel.send(helpMessage);
+		message.channel.send(Messages.helpMessage);
 		client.user.setPresence({
 			activity: {
 				name: `"-help" for help`,
@@ -43,8 +50,18 @@ client.on("ready", () => {
 		});
 	});
 
+    handles.command(client, ["get"], (message) => {
+		message.delete();
+		message.channel.send(`
+        Channel Member Id : ${message.member.voice.channel.id}
+        Guild Id : ${message.guild.id}
+        Text Channel Id : ${message.channel.id}
+        `);
+		
+	});
+
 	//to play a song
-	command(client, ["p", "play"], async (message) => {
+	handles.command(client, ["p", "play"], async (message) => {
 		let args = message.content.trim().split(/\s+/).slice(1).join(" ");
 		message.delete();
 		const url = await searchYoutube(args);
@@ -56,51 +73,30 @@ client.on("ready", () => {
 		}
 		const myServer = servers[message.guild.id];
 		myServer.queue.push(url);
-		if (myServer.queue.length === 1) {
-			message.member.voice.channel.join().then(function (connection) {
-				playTheSong(myServer, connection);
-			});
-		}
 
-		if (!message.guild.voice || !message.guild.voice.connection) {
-			message.member.voice.channel.join().then(function (connection) {
-				myServer.connection = connection;
-				playTheSong(myServer, connection);
-			});
-		}
-		const emb = new Discord.MessageEmbed();
-		const info = await ytdl.getInfo(url);
-
-		emb.setTitle(`เพิ่มเพลงเข้าคิว`)
-			.setColor(0xf2c04e)
-			.setDescription(
-				`[${info.videoDetails.title}](https://youtu.be/${info.videoDetails.videoId}) [ https://youtu.be/${info.videoDetails.videoId} ]` +
-					"\n\n" +
-					`queue by ${message.member}`
-			)
-			.addField("tips", "-p url\n-play url");
-		message.channel.send(emb).then((message) => {
+        message.member.voice.channel.join().then(function (connection) {
+            playTheSong(myServer, connection);
+        });
+		
+		message.channel.send(await Messages.playSongMessage(url)).then((message) => {
 			message.react("⏯️");
 			message.react("⏹️");
 		});
 	});
-
-	command(client, ["skip"], async (message) => {
+    
+	handles.command(client, ["skip"], async (message) => {
 		message.delete();
 		const myServer = servers[message.guild.id];
 		myServer.dispatcher.end();
 	});
-	command(client, ["test"], async (message) => {
-		message.delete();
-		console.log(message.guild.id);
-	});
+
 	// handle user reaction
-	reaction(client, ["⏹️"], (react, user) => {
+	handles.reaction(client, ["⏹️"], (react, user) => {
 		const myServer = servers[react.message.guild.id];
 		myServer.dispatcher.end();
 	});
 
-	reaction(client, ["⏯️"], async (react, user) => {
+	handles.reaction(client, ["⏯️"], async (react, user) => {
 		react.message.delete();
 
 		const myServer = servers[react.message.guild.id];
@@ -109,117 +105,106 @@ client.on("ready", () => {
 		const stop = txt.indexOf(" ", start);
 		let url = txt.slice(start, stop);
 		url = url.trim().trim(")");
-		const info = await ytdl.getInfo(url);
-		const embed = new Discord.MessageEmbed()
-			.setTitle(`เล่นเพลงอีกครั้ง`)
-			.setColor(0xf2c04e)
-			.setDescription(
-				`[${info.videoDetails.title}](https://youtu.be/${info.videoDetails.videoId}) [ https://youtu.be/${info.videoDetails.videoId} ]` +
-					"\n\n" +
-					`replay by ${user}`
-			)
-			.addField("tips", "-p url\n-play url");
 
-		react.message.channel.send(embed).then((message) => {
-			message.react("⏯️");
-			message.react("⏹️");
-		});
+		react.message.channel
+			.send(await Messages.playSongMessage(url, "React"))
+			.then((message) => {
+				message.react("⏯️");
+				message.react("⏹️");
+			});
 		myServer.queue = [url];
 		react.message.guild.members.cache
 			.get(user.id)
 			.voice.channel.join()
 			.then(function (connection) {
-				myServer.connection = connection;
 				playTheSong(myServer, connection);
 			});
+        
 	});
 });
 
 client.login(process.env.TOKEN);
+const VOICE_ID ="552497873116463107"
+const initRoom =async ()=>{
+    if(!servers[VOICE_ID]){
+        servers[VOICE_ID] = { queue: [] }
+        if(!servers[VOICE_ID].connection){
+            await client.channels.cache.get('687139603718996015').join().then(function (connection) {
+                servers[VOICE_ID].connection = connection;
+            });
+        }
+    }
 
+    if(!servers[VOICE_ID].connection.play){
+        await client.channels.cache.get('687139603718996015').join().then(function (connection) {
+            servers[VOICE_ID].connection = connection;
+        });
+    }
+    
+   
+   
+}
 app.post("/actions", async (req, res, next) => {
 	const cmd = req.body.msg;
-	if (cmd.startsWith("เปิดเพลง") || cmd.startsWith("play") ) {
-		const myServer = servers["552497873116463107"];
-		const url = await searchYoutube(cmd);
+    await initRoom();
+    const myServer = servers[VOICE_ID];
+	handles.voice(cmd, ["เปิดเพลง", "play"], async () => {
+        
+		const url = await searchYoutube(cmd.split('เพลง')[1]);
 		if (!url) return;
 
-		myServer.queue.push(url)
-        myServer.dispatcher.end();
-        
+		myServer.queue.push(url);
+        if(myServer.dispatcher){
+
+            myServer.dispatcher.end();
+        }
+
 		playTheSong(myServer, myServer.connection);
 
-		const emb = new Discord.MessageEmbed();
-		const info = await ytdl.getInfo(url);
+		channel
+			.send(await Messages.playSongMessage(url, "Voice"))
+			.then((message) => {
+				message.react("⏯️");
+				message.react("⏹️");
+			});
+	});
 
-		emb.setTitle(`[Voice] เปิดเพลง`)
-			.setColor(0xf2c04e)
-			.setDescription(
-				`[${info.videoDetails.title}](https://youtu.be/${info.videoDetails.videoId}) [ https://youtu.be/${info.videoDetails.videoId} ]` 
-
-			)
-			.addField("tips", "-p url\n-play url");
-		channel.send(emb).then((message) => {
-			message.react("⏯️");
-			message.react("⏹️");
-		});
-	} else if (cmd.startsWith("ปิดเพลง") || cmd.startsWith("เปลี่ยนเพลง") || cmd.startsWith("หยุด"))  {
-		const myServer = servers["552497873116463107"];
+	handles.voice(cmd, ["ปิดเพลง", "เปลี่ยนเพลง", "หยุด","ปิด"], async () => {
+	
 		myServer.dispatcher.end();
-	}else if (cmd.startsWith('เพิ่มเพลง')){
-        const myServer = servers["552497873116463107"];
+	});
+
+	handles.voice(cmd, ["เพิ่มเพลง"], async () => {
+	
 		const url = await searchYoutube(cmd);
 		if (!url) return;
 
-		myServer.queue.push(url)
-        
-
-		const emb = new Discord.MessageEmbed();
-		const info = await ytdl.getInfo(url);
-
-		emb.setTitle(`[Voice] เปิดเพลง`)
-			.setColor(0xf2c04e)
-			.setDescription(
-				`[${info.videoDetails.title}](https://youtu.be/${info.videoDetails.videoId}) [ https://youtu.be/${info.videoDetails.videoId} ]` 
-
-			)
-			.addField("tips", "-p url\n-play url");
-		channel.send(emb).then((message) => {
-			message.react("⏯️");
-			message.react("⏹️");
-		});
-    }else if(cmd.startsWith('คิว') || cmd.toUpperCase().startsWith('Q')){
-        const myServer = servers["552497873116463107"];
-       
-        if (myServer && myServer.queue) {
-           const  playlist = await Promise.all(
-                myServer.queue.map(async (url, index) => {
-                    const name = await ytdl.getBasicInfo(url);
-
-                    const result =
-                        (index + 1).toString() +
-                        ". " +
-                        `[${name.videoDetails.title}](https://youtu.be/${name.videoDetails.videoId}) [ https://youtu.be/${name.videoDetails.videoId} ]` +
-                        "\n";
-
-                    return result;
-                })
-                
-            );
-
-            const embed = new Discord.MessageEmbed()
-            .setTitle("รายการ")
-
-            .setColor(0x00a352)
-            .setDescription(playlist)
-            .addField("tips", "-show");
-
-        channel.send(embed);
+		if(myServer.queue.length >=1) {
+            myServer.queue.push(url);
+        }else{
+            myServer.queue = [url]
+            playTheSong(myServer,myServer.connection)
         }
-    
-    }
-	return res.send(200);
+
+		channel
+			.send(await Messages.addQueueMessage(url, "Voice"))
+			.then((message) => {
+				message.react("⏯️");
+				message.react("⏹️");
+			});
+	});
+
+	handles.voice(cmd, [ "Q", "q"], async () => {
+
+		channel.send(await Messages.showQueue(myServer,"Voice"));
+	});
+
+	return res.sendStatus(200);
 });
-app.listen(80, () => {
-	console.log("Voice listenning on port 80!");
-});
+const httpsOptions ={
+    cert : fs.readFileSync(path.join(__dirname,'ssl',"server.crt")),
+    key : fs.readFileSync(path.join(__dirname,'ssl',"server.key"))
+}
+https.createServer( httpsOptions , app).listen( 443 , ()=>{
+    console.log("Server listenning on port 443 !");
+})

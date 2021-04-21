@@ -1,9 +1,12 @@
 const ytdl = require("ytdl-core");
 
 const play = (server, connection) => {
+
+
 	server.dispatcher = connection.play(
 		ytdl(server.queue[0], { filter: "audio" })
 	);
+    
 
 	server.dispatcher.on("finish", function () {
 		server.queue.shift();
