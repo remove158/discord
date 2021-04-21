@@ -45,7 +45,7 @@ exports.playSongMessage = async(url ,header="Message",queue=[]) => {
 		const emb = new Discord.MessageEmbed()
 			.setTitle(title)
 			.setColor(0xf2c04e)
-			.setDescription("**Queues**" + `${playlist}\n** Voice Control ** \n - https://osmdiscordbot.herokuapp.com   :) enjoy !`);
+			.setDescription("**Queues** \n" + `${playlist}\n** Voice Control ** \n - https://osmdiscordbot.herokuapp.com   :) enjoy !`);
         return emb;
 }
 
