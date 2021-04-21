@@ -2,15 +2,22 @@ require("dotenv").config();
 const Discord = require("discord.js");
 const client = new Discord.Client();
 const ytdl = require("ytdl-core");
-const { botChannelName } = require("./config.json");
 const command = require("./command");
 const reaction = require("./reaction");
 const searchYoutube = require("./algorithm/seachYoutubeAlgo");
 const helpMessage = require('./helpMessage')
 const servers = {};
 const playTheSong = require("./algorithm/playMusicAlgo");
+const express = require('express');
+const app = express();
+const bodyParser = require('body-parser')
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: true }))
+app.use(express.static('public'))
+var channel ;
 client.on("ready", () => {
 	console.log("The client is ready !");
+    channel = client.channels.cache.find(channel => channel.name === "osm-bot")
 
 	//to clear channel
 	command(client, ["cc", "clear"], (message) => {
@@ -78,7 +85,10 @@ client.on("ready", () => {
 		const myServer = servers[message.guild.id];
 		myServer.dispatcher.end();
     });
-
+    command(client,["test"] , async(message)=>{
+        message.delete();
+        console.log(message.guild.id);
+    })
 	// handle user reaction
 	reaction(client, ["⏹️"], (react, user) => {
 		const myServer = servers[react.message.guild.id];
@@ -119,3 +129,20 @@ client.on("ready", () => {
 });
 
 client.login(process.env.TOKEN);
+
+
+app.post("/actions", (req,res,next)=>{
+    const cmd = req.body.msg;
+    if(cmd.startsWith('เปิดเพลง')){
+        const myServer = servers['552497873116463107']
+		myServer.dispatcher.end();
+       channel.send(`-p ${cmd.split('เปิดเพลง')[1]}`)
+    }else if(cmd.startsWith('ปิดเพลง') || cmd.startsWith('เปลี่ยนเพลง')){
+        const myServer = servers['552497873116463107']
+		myServer.dispatcher.end(); 
+    }
+   return res.send(200)
+})
+app.listen(3000 , ()=>{
+    console.log("Voice listenning on port 3000!");
+})
