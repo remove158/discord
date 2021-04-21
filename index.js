@@ -172,7 +172,8 @@ app.post("/actions", async (req, res, next) => {
 		if (!url) return;
 
 		myServer.queue.push(url)
-
+        const emb = new Discord.MessageEmbed();
+        
 		emb.setTitle(`[Voice] เพิ่มเพลง`)
 			.setColor(0xf2c04e)
 			.setDescription(
@@ -203,7 +204,7 @@ app.post("/actions", async (req, res, next) => {
                 
             );
 
-            embed = new Discord.MessageEmbed()
+            const embed = new Discord.MessageEmbed()
             .setTitle("รายการ")
 
             .setColor(0x00a352)
