@@ -1,4 +1,4 @@
-require('dotenv').config()
+
 const Discord = require("discord.js");
 const client = new Discord.Client();
 const ytdl = require("ytdl-core");
