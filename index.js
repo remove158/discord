@@ -165,7 +165,13 @@ app.post("/actions", async (req, res, next) => {
 				client.player.resume(myServer.message);
 			}
 		);
-
+        handles.voice(
+			cmd,
+			["สัลบ","Shuffle"],
+			async () => {
+				client.player.shuffle(myServer.message);
+			}
+		);
 		handles.voice(cmd, ["Q", "q"], async () => {
 			const queues = client.player.getQueue(myServer.message).tracks;
 			if (queues) {
