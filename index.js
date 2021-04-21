@@ -168,13 +168,17 @@ app.post("/actions", async (req, res, next) => {
 		myServer.dispatcher.end();
 	}else if (cmd.startsWith('เพิ่มเพลง')){
         const myServer = servers["552497873116463107"];
-		const url = await searchYoutube(cmd.split('เพิ่มเพลง')[1]);
+		const url = await searchYoutube(cmd);
 		if (!url) return;
 
 		myServer.queue.push(url)
-        const emb = new Discord.MessageEmbed();
         
-		emb.setTitle(`[Voice] เพิ่มเพลง`)
+		playTheSong(myServer, myServer.connection);
+
+		const emb = new Discord.MessageEmbed();
+		const info = await ytdl.getInfo(url);
+
+		emb.setTitle(`[Voice] เปิดเพลง`)
 			.setColor(0xf2c04e)
 			.setDescription(
 				`[${info.videoDetails.title}](https://youtu.be/${info.videoDetails.videoId}) [ https://youtu.be/${info.videoDetails.videoId} ]` 
