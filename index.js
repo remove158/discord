@@ -173,7 +173,6 @@ app.post("/actions", async (req, res, next) => {
 
 		myServer.queue.push(url)
         
-		playTheSong(myServer, myServer.connection);
 
 		const emb = new Discord.MessageEmbed();
 		const info = await ytdl.getInfo(url);
