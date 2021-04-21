@@ -31,7 +31,7 @@ exports.addQueueMessage = async(url , header="Message") => {
 
 exports.playSongMessage = async(url ,header="Message") => {
     const info = await ytdl.getInfo(url);
-    const title = `[${header}] เพิ่มเพลงเข้าคิว`
+    const title = `[${header}] กำลังเล่นเพลง`
 		const emb = new Discord.MessageEmbed()
 			.setTitle(title)
 			.setColor(0xf2c04e)

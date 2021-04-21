@@ -27,6 +27,10 @@ var channel;
 const RESET = () => {
 	servers = {};
 };
+
+client.player.on("trackStart" , async(message , track)=> {
+    message.channel.send(await Messages.playSongMessage(track.url , "Auto"))
+})
 client.on("ready", () => {
 	console.log("The client is ready !");
 	channel = client.channels.cache.find(
@@ -83,7 +87,7 @@ client.on("ready", () => {
 		const url = await searchYoutube(args);
 		client.player.play(message, url);
 		message.channel
-			.send(await Messages.playSongMessage(url))
+			.send(await Messages.addQueueMessage(url))
 			.then((message) => {
 				message.react("⏯️");
 				message.react("⏹️");
@@ -135,7 +139,7 @@ app.post("/actions", async (req, res, next) => {
 			client.player.play(myServer.message, url);
 
 			myServer.message.channel
-				.send(await Messages.playSongMessage(url, "Voice"))
+				.send(await Messages.addQueueMessage(url, "Voice"))
 				.then((message) => {
 					message.react("⏯️");
 					message.react("⏹️");
