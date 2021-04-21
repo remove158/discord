@@ -1,4 +1,4 @@
-exports = (message , aliases , callback)=>{
+module.exports = (message , aliases , callback)=>{
     if (typeof aliases === "string") {
 		aliases = [aliases];
 	}

@@ -8,11 +8,9 @@ module.exports = (client, aliases, callback) => {
 	client.on("message", (message) => {
 		const { content } = message;
 		//return if message comming form bot
-        console.log(message.channel.id);
 		aliases.forEach((alias) => {
 			const command = `${prefix}${alias}`;
             const cs = content.split(" ");
-            console.log(cs);
 			if (cs[0] === command || content === command) {
 				callback(message);
 			}

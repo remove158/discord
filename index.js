@@ -69,12 +69,12 @@ client.on("ready", () => {
 			});
 		}
 
-		message.channel.send(Messages.playSongMessage(url)).then((message) => {
+		message.channel.send(await Messages.playSongMessage(url)).then((message) => {
 			message.react("⏯️");
 			message.react("⏹️");
 		});
 	});
-
+    
 	handles.command(client, ["skip"], async (message) => {
 		message.delete();
 		const myServer = servers[message.guild.id];
@@ -98,7 +98,7 @@ client.on("ready", () => {
 		url = url.trim().trim(")");
 
 		react.message.channel
-			.send(Messages.playSongMessage(url, "React"))
+			.send(await Messages.playSongMessage(url, "React"))
 			.then((message) => {
 				message.react("⏯️");
 				message.react("⏹️");
@@ -120,7 +120,8 @@ app.post("/actions", async (req, res, next) => {
 	const cmd = req.body.msg;
 	handles.voice(cmd, ["เปิดเพลง", "play"], async () => {
 		const myServer = servers["552497873116463107"];
-		const url = await searchYoutube(cmd);
+        
+		const url = await searchYoutube(cmd.split('เพลง')[1]);
 		if (!url) return;
 
 		myServer.queue.push(url);
@@ -158,10 +159,11 @@ app.post("/actions", async (req, res, next) => {
 
 	handles.voice(cmd, ["เพิ่มเพลง", "Q", "q"], async () => {
 		const myServer = servers["552497873116463107"];
-		channel.send(Messages.showQueue(myServer));
+        console.log("55555");
+		channel.send(await Messages.showQueue(myServer));
 	});
 
-	return res.send(200);
+	return res.sendStatus(200);
 });
 app.listen(80, () => {
 	console.log("Voice listenning on port 80!");

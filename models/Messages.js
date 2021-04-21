@@ -21,9 +21,7 @@ exports.addQueueMessage = async(url , header="Message") => {
 		emb.setTitle(title)
 			.setColor(0xf2c04e)
 			.setDescription(
-				`[${info.videoDetails.title}](https://youtu.be/${info.videoDetails.videoId}) [ https://youtu.be/${info.videoDetails.videoId} ]` +
-					"\n\n" +
-					`queue by ${message.member}`
+				`[${info.videoDetails.title}](https://youtu.be/${info.videoDetails.videoId}) [ https://youtu.be/${info.videoDetails.videoId} ]` 
 			)
 			.addField("tips", "-p url\n-play url");
     return emb;
@@ -36,16 +34,16 @@ exports.playSongMessage = async(url ,header="Message") => {
 			.setTitle(title)
 			.setColor(0xf2c04e)
 			.setDescription(
-				`[${info.videoDetails.title}](https://youtu.be/${info.videoDetails.videoId}) [ https://youtu.be/${info.videoDetails.videoId} ]` +
-					"\n\n" +
-					`replay by ${user}`
+				`[${info.videoDetails.title}](https://youtu.be/${info.videoDetails.videoId}) [ https://youtu.be/${info.videoDetails.videoId} ]`
 			)
 			.addField("tips", "-p url\n-play url");
         return emb;
 }
 
-exports.showQueue = async(myServer)=>{
-
+exports.showQueue = async(myServer,header="Voice")=>{
+        if(!myServer.queue){
+            myServer.queue = []
+        }
         const playlist = await Promise.all(
             myServer.queue.map(async (url, index) => {
                 const name = await ytdl.getBasicInfo(url);
@@ -53,18 +51,16 @@ exports.showQueue = async(myServer)=>{
                 const result =
                     (index + 1).toString() +
                     ". " +
-                    `[${name.videoDetails.title}](https://youtu.be/${name.videoDetails.videoId}) [ https://youtu.be/${name.videoDetails.videoId} ]` +
-                    "\n";
-
+                    `[${name.videoDetails.title}](https://youtu.be/${name.videoDetails.videoId}) [ https://youtu.be/${name.videoDetails.videoId} ]`
                 return result;
             })
         );
-
+        const title = `[${header}] รายการ`
         const embed = new Discord.MessageEmbed()
-            .setTitle("รายการ")
+            .setTitle(title)
 
             .setColor(0x00a352)
-            .setDescription(playlist)
+            .setDescription(playlist|| "None")
             .addField("tips", "-show");
 
         return embed;
