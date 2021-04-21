@@ -161,7 +161,7 @@ app.post("/actions", async (req, res, next) => {
 			client.player.shuffle(myServer.message);
 		});
 
-		handles.voice(cmd, ["ข้ามไป", "ไป", "ไปที่", "ไปตอน"], async () => {
+		handles.voice(cmd, [ "ไป", "ไปที่", "ไปตอน"], async () => {
 			const txt = cmd;
 			const min = txt.match(/\d+ นาที/)
 				? parseInt(txt.match(/\d+ นาที/)[0].split(" ")[0])
