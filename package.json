@@ -26,9 +26,6 @@
         "discord.js": "^12.5.3",
         "dotenv": "^8.2.0",
         "express": "^4.17.1",
-        "ffmpeg": "^0.0.4",
-        "node-gyp": "^8.0.0",
-        "node-opus": "^0.3.3",
         "opusscript": "0.0.8",
         "youtube-search-api": "^1.0.8",
         "ytdl-core": "^4.5.0"
