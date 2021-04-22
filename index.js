@@ -153,6 +153,20 @@ app.post("/actions", async (req, res, next) => {
 		handles.voice(cmd, ["หยุด", "พัก"], async () => {
 			client.player.pause(myServer.message);
 		});
+
+        handles.voice(cmd, ["กลับ"], async () => {
+			client.player.back(myServer.message);
+            
+		});
+        handles.voice(cmd, ["เปิดเล่นวน"], async () => {
+            client.player.setLoopMode(myServer.message,true);
+            myServer.message.channel.send('Loop : ON')
+		});
+        handles.voice(cmd, ["ยกเลิกเล่นวน"], async () => {
+         
+			client.player.setLoopMode(myServer.message,false);
+            myServer.message.channel.send('Loop : Off')
+		});
 		handles.voice(cmd, ["เล่น", "ต่อ", "เล่นต่อ"], async () => {
 			client.player.resume(myServer.message);
 		});
@@ -172,7 +186,7 @@ app.post("/actions", async (req, res, next) => {
 			const half = txt.match("ครึ่ง");
 			const mil = (min * 60 + sec) * 1000 + (half ? 30 * 1000 : 0);
             client.player.setPosition(myServer.message , mil)
-            myServer.message.send(`**[Voice]** ${txt}`)
+            myServer.message.channel.send(`**[Voice]** ${txt}`)
 		});
 
 		handles.voice(cmd, ["Q", "q"], async () => {
