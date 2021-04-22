@@ -189,7 +189,7 @@ app.post("/actions", async (req, res, next) => {
             myServer.message.channel.send(`**[Voice]** ${txt}`)
 		});
 
-		handles.voice(cmd, ["Q", "q"], async () => {
+		handles.voice(cmd, ["Q", "q","คิว","รายการ"], async () => {
 			const queues = client.player.getQueue(myServer.message).tracks;
 			if (queues) {
 				myServer.message.channel.send(await Messages.showQueue(queues));
