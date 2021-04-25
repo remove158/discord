@@ -11,7 +11,7 @@ exports.helpMessage = `
 ** -show ** - to show playing queue.
 ** react ⏯️** - to the song for play this song now !
 ** react ⏹️** - to the song for skip playing song !
-** Voice Control ** - https://osmdiscordbot.herokuapp.com   :) enjoy !
+** Voice Control ** - http://discord.piyaphat.xyz/   :) enjoy !
 
 ================= END CONSOLE =================
 `
@@ -25,7 +25,7 @@ exports.addQueueMessage = async(url , header="Message") => {
 			.setDescription(
 				` ${info.videoDetails.title} [ https://youtu.be/${info.videoDetails.videoId} ]` 
 			)
-			.addField("**TIPS**", "-p <url/name>\n** Voice Control ** \n - https://osmdiscordbot.herokuapp.com   :) enjoy ! ");
+			.addField("**TIPS**", "-p <url/name>\n** Voice Control ** \n - http://discord.piyaphat.xyz/   :) enjoy ! ");
     return emb;
 }
 
@@ -45,7 +45,7 @@ exports.playSongMessage = async(url ,header="Message",queue=[]) => {
 		const emb = new Discord.MessageEmbed()
 			.setTitle(title)
 			.setColor(0xf2c04e)
-			.setDescription("**Queues** \n" + `${playlist}\n** Voice Control ** \n - https://osmdiscordbot.herokuapp.com   :) enjoy !`);
+			.setDescription("**Queues** \n" + `${playlist}\n** Voice Control ** \n - http://discord.piyaphat.xyz/   :) enjoy !`);
         return emb;
 }
 
@@ -67,7 +67,7 @@ exports.showQueue = async(queue,header="Voice")=>{
 
             .setColor(0x00a352)
             .setDescription(playlist|| "None")
-            .addField("**TIPS**", "-show \n ** Voice Control **  \n- https://osmdiscordbot.herokuapp.com   :) enjoy !");
+            .addField("**TIPS**", "-show \n ** Voice Control **  \n- http://discord.piyaphat.xyz/   :) enjoy !");
 
         return embed;
 }
