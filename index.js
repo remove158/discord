@@ -1,11 +1,10 @@
 const Discord = require("discord.js");
 const client = new Discord.Client();
-const ytdl = require("ytdl-core");
+require('dotenv').config()
 const searchYoutube = require("./algorithm/seachYoutubeAlgo");
 const Messages = require("./models/Messages");
 const handles = require("./handles/");
 const servers = {};
-const playTheSong = require("./algorithm/playMusicAlgo");
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
@@ -205,5 +204,5 @@ app.get("/", (req, res) => {
 });
 
 app.listen(process.env.PORT || 8080, () => {
-	console.log(`Server listenning on port 8080  !`);
+	console.log(`Server listenning on port ${process.env.PORT}  !`);
 });
