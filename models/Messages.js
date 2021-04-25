@@ -1,6 +1,7 @@
 const Discord = require("discord.js");
 const ytdl = require("ytdl-core");
 
+const DOMAIN = process.env.DOMAIN || "https://discord.piyaphat.xyz/"
 exports.helpMessage = `
 ================= CONSOLE =================
 
@@ -11,7 +12,7 @@ exports.helpMessage = `
 ** -show ** - to show playing queue.
 ** react ⏯️** - to the song for play this song now !
 ** react ⏹️** - to the song for skip playing song !
-** Voice Control ** - http://discord.piyaphat.xyz/   :) enjoy !
+** Voice Control ** - ${DOMAIN}   :) enjoy !
 
 ================= END CONSOLE =================
 `
@@ -25,7 +26,7 @@ exports.addQueueMessage = async(url , header="Message") => {
 			.setDescription(
 				` ${info.videoDetails.title} [ https://youtu.be/${info.videoDetails.videoId} ]` 
 			)
-			.addField("**TIPS**", "-p <url/name>\n** Voice Control ** \n - http://discord.piyaphat.xyz/   :) enjoy ! ");
+			.addField("**TIPS**", `-p <url/name>\n** Voice Control ** \n - ${DOMAIN}   :) enjoy ! `);
     return emb;
 }
 
@@ -45,7 +46,7 @@ exports.playSongMessage = async(url ,header="Message",queue=[]) => {
 		const emb = new Discord.MessageEmbed()
 			.setTitle(title)
 			.setColor(0xf2c04e)
-			.setDescription("**Queues** \n" + `${playlist}\n** Voice Control ** \n - http://discord.piyaphat.xyz/   :) enjoy !`);
+			.setDescription("**Queues** \n" + `${playlist}\n** Voice Control ** \n - ${DOMAIN}   :) enjoy !`);
         return emb;
 }
 
@@ -67,7 +68,7 @@ exports.showQueue = async(queue,header="Voice")=>{
 
             .setColor(0x00a352)
             .setDescription(playlist|| "None")
-            .addField("**TIPS**", "-show \n ** Voice Control **  \n- http://discord.piyaphat.xyz/   :) enjoy !");
+            .addField("**TIPS**", `-show \n ** Voice Control **  \n- ${DOMAIN}   :) enjoy !`);
 
         return embed;
 }
