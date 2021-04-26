@@ -143,7 +143,8 @@ app.post("/actions", async (req, res, next) => {
 				});
 		});
 		handles.voice(cmd, ["Play"], async () => {
-			const url = await searchYoutube(cmd.split("Play")[1]);
+         
+			const url = await searchYoutube(cmd.split("Play").slice(1).join(" "));
 			if (!url) return;
 			client.player.play(myServer.message, url);
 

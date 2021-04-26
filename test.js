@@ -1,7 +1,3 @@
-const a= 5 ;
-function printA(){
-   setTimeout(function() {console.log(a)}, 2000)
+const ls = ["1","2","3"]
 
-}
-
-printA();
+console.log(ls.slice(1).join(" "));
