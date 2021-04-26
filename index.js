@@ -130,8 +130,20 @@ app.post("/actions", async (req, res, next) => {
     const VOICE_ID = req.body.channelId || `552497873116463107`;
 	const myServer = servers[VOICE_ID];
 	if (myServer && myServer.message) {
-		handles.voice(cmd, ["เปิดเพลง","เล่นเพลง", "Play"], async () => {
+		handles.voice(cmd, ["เปิดเพลง","เล่นเพลง"], async () => {
 			const url = await searchYoutube(cmd.split("เพลง")[1]);
+			if (!url) return;
+			client.player.play(myServer.message, url);
+
+			myServer.message.channel
+				.send(await Messages.addQueueMessage(url, "Voice"))
+				.then((message) => {
+					message.react("⏯️");
+					message.react("⏹️");
+				});
+		});
+		handles.voice(cmd, ["Play"], async () => {
+			const url = await searchYoutube(cmd.split("Play")[1]);
 			if (!url) return;
 			client.player.play(myServer.message, url);
 
