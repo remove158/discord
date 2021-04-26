@@ -1,3 +1,3 @@
-const ls = ["1","2","3"]
+const ls = "Play despascit aosd fasdf"
 
-console.log(ls.slice(1).join(" "));
+console.log(ls.split("Play").slice(1).join(" "));
