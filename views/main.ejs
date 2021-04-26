@@ -38,10 +38,18 @@
 		<title>OSM Bot</title>
 	</head>
 	<body>
-		<div class="container">
-			<h1>OSM Discord Bot Voice Controller !</h1>
-			<div class="channelId">Guild ID : <input type="text" id="channelId" /></div>
-			
+		<class class="container">
+			<h1 class="p-5">OSM Discord Bot Voice Controller !</h1>
+			<div class="form-group col-sm-12">
+				<div class="col-sm-12">
+					<input
+						type="email"
+						class="form-control"
+						id="channelId"
+						placeholder="Guild ID"
+					/>
+				</div>
+			</div>
 			<div class="controller">
 				<button
 					type="button"
@@ -60,22 +68,58 @@
 				</select>
 				<span id="info"></span>
 			</div>
-            
+
 			<blockquote class="blockquote">
 				<div id="results">
 					<span class="final" id="final_span"></span>
 					<span class="interim" id="interim_span"></span>
 				</div>
 			</blockquote>
-           
+
 			<div class="invite fs-2">
 				Click
 				<a
 					href="https://discord.com/api/oauth2/authorize?client_id=805856620026265610&permissions=0&scope=bot"
 					>here</a
 				>
-				to invite bot. ( -get to see server details )
+				to invite bot.
 			</div>
+            <br/>
+       
+			<table class="table m-5">
+				<thead>
+					<tr>
+						<th scope="col">#</th>
+						<th scope="col">Command</th>
+						<th scope="col">Voice</th>
+						<th scope="col">?</th>
+					</tr>
+				</thead>
+				<tbody >
+					<% const ls = [["-get","-","ข้อมูล discord guild"],
+                        ["-p <url>","-","เล่นเพลงตาม url"] ,
+                         ["-p <name>","เปิดเพลง<ชื่อเพลง>","เล่นเพลงตาม name"],
+                         ["-skip ","ข้าม/ปิด/เปลี่ยนเพลง","ข้ามเพลงนี้"],
+                            ["-pause","หยุด/พัก","หยุดเพลง"],
+                            ["-resume","เล่นต่อ/เล่น","เล่นเพลงต่อ"],
+                            ["-","กลับ","เล่นเพลงก่อนหน้า"],
+                            ["-","เล่นวน","เล่นเพลงที่อยู่ในคิวทั้งหมดแบบวน"],
+                            ["-","ยกเลิกเล่นวน","ยกเลิกการเล่นเพลงที่อยู่ในคิวทั้งหมดแบบวน"],
+                            ["-","ไปตอน< ?นาที ?วินาที>/< ?นาที ครึ่ง>","ยกเลิกการเล่นเพลงที่อยู่ในคิวทั้งหมดแบบวน"],
+                            ]
+                             %>
+                        
+                    <% for (var i = 0; i < ls.length;i++) { %>
+					<tr>
+						<th scope="row"><%=i+1%></th>
+						<td><%=ls[i][0] %></td>
+						<td><%=ls[i][1] %></td>
+						<td><%=ls[i][2] %></td>
+					</tr>
+					<% } %>
+				</tbody>
+			</table>
+        </class>
 		</div>
 
 		<!-- Optional JavaScript -->
@@ -196,18 +240,16 @@
 					upgrade();
 					return;
 				}
-            
-                const channelId = document.getElementById("channelId").value;
+
+				const channelId = document.getElementById("channelId").value;
 				for (var i = event.resultIndex; i < event.results.length; ++i) {
 					var transcript = event.results[i][0].transcript;
 					var confidence = event.results[i][0].confidence;
 					var isFinal = event.results[i].isFinal && confidence > 0;
-                   
-                
-                  
+
 					if (isFinal) {
 						final_transcript = transcript;
-						const data = { msg: transcript ,channelId   };
+						const data = { msg: transcript, channelId };
 						fetch(`/actions`, {
 							method: "POST",
 							headers: {
@@ -216,7 +258,6 @@
 							},
 							body: JSON.stringify(data),
 						}).then((res) => {
-                          
 							console.log("Request complete! response:", res);
 						});
 					} else {
