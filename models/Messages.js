@@ -25,7 +25,7 @@ exports.playSongMessage = async(track , header="Message") => {
 			.setDescription(
 				` ${track.title} [ ${track.url} ]` 
 			)
-			.addField("**TIPS**", `**-p <url/name> รองรับทั้ง spotify , youtube , ชื่อ** \n** Voice Control ** \n - ${DOMAIN}   :) enjoy ! `);
+			.addField("**TIPS**", `**-p <url/name> รองรับทั้ง spotify , youtube , Playlist  ** \n** Voice Control ** \n - ${DOMAIN}   :) enjoy ! `);
     return emb;
 }
 
@@ -44,7 +44,7 @@ exports.addQueueMessage = async(track ,queue=[] ,header="Message") => {
 		const emb = new Discord.MessageEmbed()
 			.setTitle(title)
 			.setColor(0xf2c04e)
-			.setDescription("**Queues** \n" + `${playlist}\n** Voice Control ** \n - ${DOMAIN}   :) enjoy !`);
+			.setDescription("**Queues** \n" + `${playlist}\n** Voice Control ** \n - ${DOMAIN}   :) enjoy ! \n -p <url/name> รองรับทั้ง spotify , youtube , Playlist `);
         return emb;
 }
 
