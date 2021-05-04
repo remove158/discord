@@ -17,32 +17,30 @@ exports.helpMessage = `
 ================= END CONSOLE =================
 `
 
-exports.addQueueMessage = async(url , header="Message") => {
+exports.playSongMessage = async(track , header="Message") => {
     const emb = new Discord.MessageEmbed();
-		const info = await ytdl.getInfo(url);
         const title = `**[${header}]** เพิ่มเพลงเข้าคิว`
 		emb.setTitle(title)
 			.setColor(0xf2c04e)
 			.setDescription(
-				` ${info.videoDetails.title} [ https://youtu.be/${info.videoDetails.videoId} ]` 
+				` ${track.title} [ ${track.url} ]` 
 			)
-			.addField("**TIPS**", `-p <url/name>\n** Voice Control ** \n - ${DOMAIN}   :) enjoy ! `);
+			.addField("**TIPS**", `**-p <url/name> รองรับทั้ง spotify , youtube , ชื่อ** \n** Voice Control ** \n - ${DOMAIN}   :) enjoy ! `);
     return emb;
 }
 
-exports.playSongMessage = async(url ,header="Message",queue=[]) => {
-    const info = await ytdl.getInfo(url);
+exports.addQueueMessage = async(track ,queue=[] ,header="Message") => {
     const playlist = await Promise.all(
         queue.map(async (item, index) => {
 
             const result =
                 (index + 1).toString() +
                 ". " +
-                `${item.title}  [${item.url} ]`
+                `${item.title}  [${item.url} ] \n`
             return result;
         })
     );
-    const title = `**[${header}]** กำลังเล่นเพลง ${info.videoDetails.title}`
+    const title = `**[${header}]** กำลังเล่นเพลง ${track.title}`
 		const emb = new Discord.MessageEmbed()
 			.setTitle(title)
 			.setColor(0xf2c04e)

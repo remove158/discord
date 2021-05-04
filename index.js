@@ -23,12 +23,32 @@ app.set("view engine", "ejs");
 app.set(express.static(path.join(__dirname, "public")));
 
 client.player.on("trackStart", async (message, track) => {
-	const queues = client.player.getQueue(message).tracks;
-	if (queues) {
-		message.channel.send(
-			await Messages.playSongMessage(track.url, "Auto", queues)
-		);
-	}
+    servers[message.guild.id] = {};
+    servers[message.guild.id].message = message;
+    servers[message.guild.id].playing = true;
+
+    message.channel.send(
+        await Messages.playSongMessage(track, "เล่น")
+    ).then((message) => {
+        message.react("⏯️");
+        message.react("⏹️");
+    });
+	
+});
+
+client.player.on("trackAdd", async ( message, queue,track) => {
+
+    servers[message.guild.id] = {};
+    servers[message.guild.id].message = message;
+    servers[message.guild.id].playing = true;
+
+    message.channel.send(
+        await Messages.addQueueMessage(track,queue.tracks, "เพิ่ม")
+    ).then((message) => {
+        message.react("⏯️");
+        message.react("⏹️");
+    });
+	
 });
 client.on("ready", () => {
 	console.log("The client is ready !");
@@ -80,14 +100,8 @@ client.on("ready", () => {
 		servers[message.guild.id].playing = true;
 		let args = message.content.trim().split(/\s+/).slice(1).join(" ");
 		message.delete();
-		const url = await searchYoutube(args);
-		client.player.play(message, url);
-		message.channel
-			.send(await Messages.addQueueMessage(url))
-			.then((message) => {
-				message.react("⏯️");
-				message.react("⏹️");
-			});
+		client.player.play(message, args,true);
+	
 	});
 
 	handles.command(client, ["skip"], async (message) => {
@@ -131,29 +145,17 @@ app.post("/actions", async (req, res, next) => {
 	const myServer = servers[VOICE_ID];
 	if (myServer && myServer.message) {
 		handles.voice(cmd, ["เปิดเพลง","เล่นเพลง"], async () => {
-			const url = await searchYoutube(cmd.split("เพลง")[1]);
-			if (!url) return;
-			client.player.play(myServer.message, url);
+            const url =cmd.split("เพลง")[1]
+            if (!url) return;
+			client.player.play(myServer.message, url , true);
 
-			myServer.message.channel
-				.send(await Messages.addQueueMessage(url, "Voice"))
-				.then((message) => {
-					message.react("⏯️");
-					message.react("⏹️");
-				});
+
 		});
 		handles.voice(cmd, ["Play"], async () => {
          
-			const url = await searchYoutube(cmd.split("Play").slice(1).join(" "));
+			const url = cmd.split("Play").slice(1).join(" ")
 			if (!url) return;
-			client.player.play(myServer.message, url);
-
-			myServer.message.channel
-				.send(await Messages.addQueueMessage(url, "Voice"))
-				.then((message) => {
-					message.react("⏯️");
-					message.react("⏹️");
-				});
+			client.player.play(myServer.message, url,true);
 		});
 
 		handles.voice(
