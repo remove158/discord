@@ -40,14 +40,6 @@ const getMessageType = (message) => {
 client.on("ready", () => {
 	console.log("The message manager is ready !");
 
-    handles.command(client, ["cc", "clear"], (message) => {
-		if (message.member.hasPermission("ADMIN")) {
-			message.channel.messages.fetch().then((results) => {
-				message.channel.bulkDelete(results);
-			});
-		}
-	
-	});
 
     client.on("message", (message) => {
         const botCommand = ". ! -".split(' ')
