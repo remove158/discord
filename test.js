@@ -1,13 +1,9 @@
 const Discord = require("discord.js");
 const client = new Discord.Client();
 require('dotenv').config()
-
-const Messages = require("./models/Messages");
 const handles = require("./handles/");
-const servers = {};
 const express = require("express");
 const app = express();
-const bodyParser = require("body-parser");
 const cors = require("cors");
 const path = require("path");
 const { Player } = require("discord-player");
@@ -16,11 +12,10 @@ const player = new Player(client);
 client.player = player;
 
 app.use(cors({ origin: true }));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
-app.set(express.static(path.join(__dirname, "public")));
+
 
 
 const getChannel = (name) => {
@@ -89,11 +84,3 @@ client.on("ready", () => {
 
 client.login(process.env.TOKEN);
 
-
-app.get("/", (req, res) => {
-	res.render("main");
-});
-
-app.listen(process.env.PORT || 8080, () => {
-	console.log(`Server listenning on port ${process.env.PORT}  !`);
-});
