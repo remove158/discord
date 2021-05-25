@@ -29,10 +29,15 @@ const getMessageType = (message) => {
     if(message.attachments.size > 0){
         return "files"
     }
+
+    if(message.content.startsWith("```")){
+        return "code"
+    }
     if(message.content) {
 
         return "text"
     }
+    
 
     return null
 }
@@ -42,7 +47,7 @@ client.on("ready", () => {
 
 
     client.on("message", (message) => {
-        const botCommand = ". ! -".split(' ')
+        const botCommand = ". ! - + /".split(' ')
         if(message.author.bot ||  botCommand.some(e=> e===message.content[0])) return
 
        
@@ -63,7 +68,7 @@ client.on("ready", () => {
                 }
             }else{
             
-                getChannel(messageType).send(  ` ${message.author}, ${message.content}`)
+                getChannel(messageType).send(  `${message.author}, ${message.content}`)
             }
             message.delete()
             
