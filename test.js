@@ -38,7 +38,7 @@ const getMessageType = (message) => {
 }
 
 client.on("ready", () => {
-	console.log("The client is ready !");
+	console.log("The message manager is ready !");
 
     handles.command(client, ["cc", "clear"], (message) => {
 		if (message.member.hasPermission("ADMIN")) {
@@ -67,11 +67,11 @@ client.on("ready", () => {
                 for(let i of message.attachments){
                     
                     const a = new Discord.MessageAttachment(i[1].proxyURL)
-                    getChannel(messageType).send(a)
+                    getChannel(messageType).send(message.author,a)
                
                 }
             }else{
-                getChannel(messageType).send(message.content)
+                getChannel(messageType).send(message.author , message.content)
             }
             message.delete()
             
