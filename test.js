@@ -31,7 +31,7 @@ const getMessageType = (message) => {
     }
     if(message.content) {
 
-        return "general"
+        return "text"
     }
 
     return null
@@ -57,13 +57,13 @@ client.on("ready", () => {
             })
             if(messageType== "files") {
                 for(let i of message.attachments){
-                    
-                    const a = new Discord.MessageAttachment(i[1].proxyURL)
-                    getChannel(messageType).send(message.author,a)
+                    const file = new Discord.MessageAttachment(i[1].url)
+                    getChannel(messageType).send(file)
                
                 }
             }else{
-                getChannel(messageType).send(message.author , message.content)
+            
+                getChannel(messageType).send(  ` ${message.author}, ${message.content}`)
             }
             message.delete()
             
