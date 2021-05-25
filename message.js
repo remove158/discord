@@ -1,7 +1,7 @@
 const Discord = require("discord.js");
 const client = new Discord.Client();
 require('dotenv').config()
-const handles = require("./handles/");
+const handles = require("./handles");
 const express = require("express");
 const app = express();
 const cors = require("cors");
