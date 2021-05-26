@@ -67,7 +67,6 @@ client.on("ready", () => {
                 })
                 const sendTo = getChannel(messageType)
                 if(sendTo) {
-                    console.log('Not found target room.')
                     if(messageType== "files") {
                         for(let i of message.attachments){
                             const file = new Discord.MessageAttachment(i[1].url)
@@ -80,6 +79,8 @@ client.on("ready", () => {
                         getChannel(messageType).send(  `${message.author}, ${message.content}`)
                     }
                     message.delete()
+                }else{
+                    console.log('Not found target room.')
                 }
                 
     
