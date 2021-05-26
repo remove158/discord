@@ -60,13 +60,14 @@ client.on("ready", () => {
             const messageType = getMessageType(message)
             if(!messageType) return;
             if(messageType != channelName) {
-                message.channel.send(`${message.author} มึงส่งผิด channel ละไอ่เด็กเหี้ย กูย้ายไป ${messageType} ให้แล้ว`).then( (message) => {
-                    setTimeout( () => {
-                        message.delete()
-                    }, 15 * 1000)
-                })
+              
                 const sendTo = getChannel(messageType)
                 if(sendTo) {
+                    message.channel.send(`${message.author} มึงส่งผิด channel ละไอ่เด็กเหี้ย กูย้ายไป ${messageType} ให้แล้ว`).then( (message) => {
+                        setTimeout( () => {
+                            message.delete()
+                        }, 15 * 1000)
+                    })
                     if(messageType== "files") {
                         for(let i of message.attachments){
                             const file = new Discord.MessageAttachment(i[1].url)
