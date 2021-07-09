@@ -1,54 +1,47 @@
 const Discord = require("discord.js");
 const client = new Discord.Client();
-require('dotenv').config()
-const searchYoutube = require("./algorithm/seachYoutubeAlgo");
+require("dotenv").config();
 const Messages = require("./models/Messages");
 const handles = require("./handles/");
 const servers = {};
 const express = require("express");
 const app = express();
-const bodyParser = require("body-parser");
 const cors = require("cors");
 const path = require("path");
 const { Player } = require("discord-player");
 const player = new Player(client);
-const config = require("./config.json");
 client.player = player;
 
 app.use(cors({ origin: true }));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 app.set(express.static(path.join(__dirname, "public")));
 
 client.player.on("trackStart", async (message, track) => {
-    servers[message.guild.id] = {};
-    servers[message.guild.id].message = message;
-    servers[message.guild.id].playing = true;
+	servers[message.guild.id] = {};
+	servers[message.guild.id].message = message;
+	servers[message.guild.id].playing = true;
 
-    message.channel.send(
-        await Messages.playSongMessage(track, "เล่น")
-    ).then((message) => {
-        message.react("⏯️");
-        message.react("⏹️");
-    });
-	
+	message.channel
+		.send(await Messages.playSongMessage(track, "เล่น"))
+		.then((message) => {
+			message.react("⏯️");
+			message.react("⏹️");
+		});
 });
 
-client.player.on("trackAdd", async ( message, queue,track) => {
+client.player.on("trackAdd", async (message, queue, track) => {
+	servers[message.guild.id] = {};
+	servers[message.guild.id].message = message;
+	servers[message.guild.id].playing = true;
 
-    servers[message.guild.id] = {};
-    servers[message.guild.id].message = message;
-    servers[message.guild.id].playing = true;
-
-    message.channel.send(
-        await Messages.addQueueMessage(track,queue.tracks, "เพิ่ม")
-    ).then((message) => {
-        message.react("⏯️");
-        message.react("⏹️");
-    });
-	
+	message.channel
+		.send(await Messages.addQueueMessage(track, queue.tracks, "เพิ่ม"))
+		.then((message) => {
+			message.react("⏯️");
+			message.react("⏹️");
+		});
 });
 client.on("ready", () => {
 	console.log("The client is ready !");
@@ -100,8 +93,8 @@ client.on("ready", () => {
 		servers[message.guild.id].playing = true;
 		let args = message.content.trim().split(/\s+/).slice(1).join(" ");
 		message.delete();
-		client.player.play(message, args,true);
-	
+		console.log(args);
+		client.player.play(message, args, true);
 	});
 
 	handles.command(client, ["skip"], async (message) => {
@@ -131,9 +124,8 @@ client.on("ready", () => {
 			client.player.resume(servers[react.message.guild.id].message);
 		}
 
-		servers[react.message.guild.id].playing = !servers[
-			react.message.guild.id
-		];
+		servers[react.message.guild.id].playing =
+			!servers[react.message.guild.id];
 	});
 });
 
@@ -141,21 +133,18 @@ client.login(process.env.TOKEN);
 
 app.post("/actions", async (req, res, next) => {
 	const cmd = req.body.msg;
-    const VOICE_ID = req.body.channelId || `552497873116463107`;
+	const VOICE_ID = req.body.channelId || `552497873116463107`;
 	const myServer = servers[VOICE_ID];
 	if (myServer && myServer.message) {
-		handles.voice(cmd, ["เปิดเพลง","เล่นเพลง"], async () => {
-            const url =cmd.split("เพลง")[1]
-            if (!url) return;
-			client.player.play(myServer.message, url , true);
-
-
+		handles.voice(cmd, ["เปิดเพลง", "เล่นเพลง"], async () => {
+			const url = cmd.split("เพลง")[1];
+			if (!url) return;
+			client.player.play(myServer.message, url, true);
 		});
 		handles.voice(cmd, ["Play"], async () => {
-         
-			const url = cmd.split("Play").slice(1).join(" ")
+			const url = cmd.split("Play").slice(1).join(" ");
 			if (!url) return;
-			client.player.play(myServer.message, url,true);
+			client.player.play(myServer.message, url, true);
 		});
 
 		handles.voice(
@@ -169,18 +158,16 @@ app.post("/actions", async (req, res, next) => {
 			client.player.pause(myServer.message);
 		});
 
-        handles.voice(cmd, ["กลับ"], async () => {
+		handles.voice(cmd, ["กลับ"], async () => {
 			client.player.back(myServer.message);
-            
 		});
-        handles.voice(cmd, ["เปิดเล่นวน"], async () => {
-            client.player.setLoopMode(myServer.message,true);
-            myServer.message.channel.send('Loop : ON')
+		handles.voice(cmd, ["เปิดเล่นวน"], async () => {
+			client.player.setLoopMode(myServer.message, true);
+			myServer.message.channel.send("Loop : ON");
 		});
-        handles.voice(cmd, ["ยกเลิกเล่นวน"], async () => {
-         
-			client.player.setLoopMode(myServer.message,false);
-            myServer.message.channel.send('Loop : Off')
+		handles.voice(cmd, ["ยกเลิกเล่นวน"], async () => {
+			client.player.setLoopMode(myServer.message, false);
+			myServer.message.channel.send("Loop : Off");
 		});
 		handles.voice(cmd, ["เล่น", "ต่อ", "เล่นต่อ"], async () => {
 			client.player.resume(myServer.message);
@@ -190,7 +177,7 @@ app.post("/actions", async (req, res, next) => {
 			client.player.shuffle(myServer.message);
 		});
 
-		handles.voice(cmd, [ "ไป", "ไปที่", "ไปตอน"], async () => {
+		handles.voice(cmd, ["ไป", "ไปที่", "ไปตอน"], async () => {
 			const txt = cmd;
 			const min = txt.match(/\d+ นาที/)
 				? parseInt(txt.match(/\d+ นาที/)[0].split(" ")[0])
@@ -200,11 +187,11 @@ app.post("/actions", async (req, res, next) => {
 				: 0;
 			const half = txt.match("ครึ่ง");
 			const mil = (min * 60 + sec) * 1000 + (half ? 30 * 1000 : 0);
-            client.player.setPosition(myServer.message , mil)
-            myServer.message.channel.send(`**[Voice]** ${txt}`)
+			client.player.setPosition(myServer.message, mil);
+			myServer.message.channel.send(`**[Voice]** ${txt}`);
 		});
 
-		handles.voice(cmd, ["Q", "q","คิว","รายการ"], async () => {
+		handles.voice(cmd, ["Q", "q", "คิว", "รายการ"], async () => {
 			const queues = client.player.getQueue(myServer.message).tracks;
 			if (queues) {
 				myServer.message.channel.send(await Messages.showQueue(queues));
