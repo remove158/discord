@@ -151,7 +151,7 @@
 			var ignore_onend;
 			var start_timestamp;
 			var lastDebounceTranscript;
-			document.getElementById("channelId").defaultValue = localStorage.getItem('channelId')
+			document.getElementById("channelId").defaultValue = localStorage.getItem('channelId') || ""
 			// utility tools
 			var two_line = /\n\n/g;
 			var one_line = /\n/g;
