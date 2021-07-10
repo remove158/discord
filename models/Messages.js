@@ -22,11 +22,11 @@ exports.playSongMessage = async (track, header = "Message") => {
 	const title = `**[${header}]** เพิ่มเพลงเข้าคิว`;
 	emb?.setTitle(title)
 		?.setColor(0xf2c04e)
-		?.setDescription(` ${track.title} [ ${track.url} ]`)
-		?.addField(
-			"**TIPS**",
-			`**-p <url/name> รองรับทั้ง spotify , youtube , Playlist  ** \n** Voice Control ** \n - ${DOMAIN}   :) enjoy ! `
-		);
+		?.setDescription(` ${track.title} [ ${track.url} ]`);
+	// ?.addField(
+	// 	`**TIPS**`,
+	// 	`**-p <url/name> รองรับทั้ง spotify , youtube , Playlist  ** \n** Voice Control ** \n - ${DOMAIN}   :) enjoy ! `
+	// );
 	return emb;
 };
 
@@ -64,11 +64,11 @@ exports.showQueue = async (queue, header = "Voice") => {
 		?.setTitle(title)
 
 		?.setColor(0x00a352)
-		?.setDescription(playlist || "None")
-		?.addField(
-			"**TIPS**",
-			`-show \n ** Voice Control **  \n- ${DOMAIN}   :) enjoy !`
-		);
+		?.setDescription(playlist || "None");
+	// ?.addField(
+	// 	"**TIPS**",
+	// 	`-show \n ** Voice Control **  \n- ${DOMAIN}   :) enjoy !`
+	// );
 
 	return embed;
 };
