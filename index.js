@@ -133,7 +133,7 @@ client.login(process.env.TOKEN);
 
 app.post("/actions", async (req, res, next) => {
 	const cmd = req.body.msg;
-	const VOICE_ID = req.body.channelId || `552497873116463107`;
+	const VOICE_ID = req.body.channelId || `805858216558329876`;
 	const myServer = servers[VOICE_ID];
 	if (myServer && myServer.message) {
 		handles.voice(cmd, ["เปิดเพลง", "เล่นเพลง"], async () => {
