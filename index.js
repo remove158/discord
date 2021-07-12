@@ -201,7 +201,13 @@ app.post("/actions", async (req, res, next) => {
 
 	return res.sendStatus(200);
 });
-
+app.get("/refresh", (req, res) => {
+	const execSync = require("child_process").execSync;
+	// import { execSync } from 'child_process';  // replace ^ if using ES modules
+	const output = execSync("git pull", { encoding: "utf-8" }); // the default is 'buffer'
+	console.log("Output was:\n", output);
+	return res.json({ succuess: true, output });
+});
 app.get("/", (req, res) => {
 	res.render("main");
 });
