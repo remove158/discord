@@ -81,8 +81,8 @@ client.on("ready", () => {
 	handles.command(client, ["get", "status"], (message) => {
 		message.delete();
 		message.channel.send(`
+        **Guild Id : ${message.guild.id}**
         Channel Member Id : ${message.member.voice.channel.id}
-        Guild Id : ${message.guild.id}
         Text Channel Id : ${message.channel.id}
         `);
 	});
