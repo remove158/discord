@@ -212,7 +212,7 @@ app.post("/refresh", (req, res) => {
 });
 app.get("/", (req, res) => {
 	console.log("test2");
-	console.log("test3");
+
 	res.render("main");
 });
 
