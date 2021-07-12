@@ -204,7 +204,7 @@ app.post("/actions", async (req, res, next) => {
 });
 app.post("/refresh", (req, res) => {
 	// import { execSync } from 'child_process';  // replace ^ if using ES modules
-	const output = execSync("git pull", { encoding: "utf-8" }); // the default is 'buffer'
+	const output = execSync("git fetch --all", { encoding: "utf-8" }); // the default is 'buffer'
 	console.log("GIT PULL :", output);
 	return res.json({ succuess: true, output });
 });
