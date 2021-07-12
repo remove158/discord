@@ -211,6 +211,7 @@ app.post("/refresh", (req, res) => {
 	return res.json({ succuess: true, output });
 });
 app.get("/", (req, res) => {
+	console.log(7);
 	res.render("main");
 });
 
