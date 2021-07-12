@@ -77,7 +77,7 @@ client.on("ready", () => {
 		});
 	});
 
-	handles.command(client, ["get"], (message) => {
+	handles.command(client, ["get", "status"], (message) => {
 		message.delete();
 		message.channel.send(`
         Channel Member Id : ${message.member.voice.channel.id}
